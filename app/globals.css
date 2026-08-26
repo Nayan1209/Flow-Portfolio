@@ -39,18 +39,24 @@ button { font: inherit; }
 .flow-node:hover .node-core, .flow-node:focus-visible .node-core, .flow-node.active .node-core { border-color: #f3f4f5; color: #fff; box-shadow: 0 0 30px rgba(255,255,255,.1), inset 0 0 18px rgba(255,255,255,.035); }
 .flow-node.active .node-core { box-shadow: 0 0 35px rgba(255,255,255,.13), inset 0 0 18px rgba(255,255,255,.035); }
 .flow-node:hover .node-halo, .flow-node:focus-visible .node-halo, .flow-node.active .node-halo { opacity: .65; transform: scale(1); animation: pulse 1.8s ease-out infinite; }
-.flow-node.center { --node-size: 150px; z-index: 8; animation: centerBreathe 6s ease-in-out infinite; }
-.flow-node.center.focus-center { --node-size: 132px; z-index: 10; }
+.flow-node.center { --node-size: 180px; z-index: 8; animation: centerBreathe 6s ease-in-out infinite; }
+.flow-node.center.focus-center { --node-size: 148px; z-index: 10; }
 .flow-node.root-persistent { --node-size: 110px; z-index: 9; }
+.flow-node.home-primary { z-index: 7; }
+.flow-node.home-primary .node-core { font-size: 10px; font-weight: 500; letter-spacing: .055em; color: #bfc7cf; border-color: #46515d; background: rgba(8,11,15,.92); box-shadow: 0 0 20px rgba(255,255,255,.025); }
+.flow-node.home-primary .node-halo { inset: -8px; }
+.flow-node.home-satellite { z-index: 5; }
+.flow-node.home-satellite .node-core { padding: 4px; font-size: 6.2px; line-height: 1.05; letter-spacing: .035em; color: #8f99a4; border-color: #39444f; background: rgba(7,10,14,.9); }
+.flow-node.home-satellite .node-halo { inset: -5px; }
 .flow-node.ancestor-depth-1 { --node-size: 82px; z-index: 7; }
 .flow-node.ancestor-depth-2 { --node-size: 62px; z-index: 6; }
 .flow-node.ancestor-depth-3 { --node-size: 48px; z-index: 5; }
-.flow-node.center .node-core { background: #f3f4f2; border-color: #fff; color: #06080a; font-family: Inter, sans-serif; font-size: 14px; font-weight: 700; letter-spacing: -.02em; box-shadow: 0 0 55px rgba(255,255,255,.07); }
+.flow-node.center .node-core { background: #f3f4f2; border-color: #fff; color: #06080a; font-family: Inter, sans-serif; font-size: 15px; font-weight: 700; letter-spacing: -.02em; box-shadow: 0 0 55px rgba(255,255,255,.07); }
 .flow-node.center .node-core::after { background: linear-gradient(115deg, transparent 20%, rgba(0,0,0,.08) 50%, transparent 80%); }
 .flow-node.center .node-halo { inset: -15px; border-color: #69737f; opacity: .35; transform: scale(1); }
-.flow-node.ancestor-depth-1 .node-core { font-size: 8px; color: #aeb7c0; border-color: #46515c; }
-.flow-node.ancestor-depth-2 .node-core { font-size: 7px; color: #7f8994; border-color: #38424d; }
-.flow-node.ancestor-depth-3 .node-core { font-size: 6px; color: #626c77; border-color: #303943; }
+.flow-node.ancestor-depth-1 .node-core { font-size: 9px; color: #aeb7c0; border-color: #46515c; }
+.flow-node.ancestor-depth-2 .node-core { font-size: 8px; color: #7f8994; border-color: #38424d; }
+.flow-node.ancestor-depth-3 .node-core { font-size: 7px; color: #626c77; border-color: #303943; }
 .node-description { position: absolute; top: calc(100% + 15px); left: 50%; width: 180px; transform: translateX(-50%) translateY(-3px); opacity: 0; pointer-events: none; color: #75808c; font: 400 9px/1.4 'DM Mono', monospace; letter-spacing: .04em; transition: opacity .25s, transform .25s; }
 .flow-node:hover .node-description, .flow-node:focus-visible .node-description { opacity: 1; transform: translateX(-50%) translateY(0); }
 .flow-detail { position: absolute; left: 30px; bottom: 84px; z-index: 20; display: flex; flex-direction: column; gap: 8px; color: #59636f; }
@@ -86,13 +92,17 @@ button { font: inherit; }
   .flow-footer-right { display: none; }
   .flow-status { font-size: 8px; }
   .flow-detail { left: 18px; bottom: 65px; max-width: 210px; }
-  .flow-node.center { --node-size: 118px; }
-  .flow-node.center.focus-center { --node-size: 104px; }
+  .flow-node.center { --node-size: 128px; }
+  .flow-node.center.focus-center { --node-size: 112px; }
+  .flow-node.home-primary { --node-size: 68px !important; }
+  .flow-node.home-satellite { --node-size: 42px !important; }
   .flow-node.root-persistent { --node-size: 88px; }
-  .flow-node.ancestor-depth-1 { --node-size: 66px; }
-  .flow-node.ancestor-depth-2 { --node-size: 52px; }
-  .flow-node.ancestor-depth-3 { --node-size: 42px; }
+  .flow-node.ancestor-depth-1 { --node-size: 68px; }
+  .flow-node.ancestor-depth-2 { --node-size: 54px; }
+  .flow-node.ancestor-depth-3 { --node-size: 44px; }
   .flow-node.center .node-core { font-size: 12px; }
+  .flow-node.home-primary .node-core { font-size: 8px; }
+  .flow-node.home-satellite .node-core { font-size: 5.4px; }
   .flow-world { transform-origin: 50% 48%; }
   .flow::before { width: 70vw; height: 70vw; }
 }
