@@ -86,11 +86,11 @@ export default function Home() {
   const animation = useRef<number | null>(null);
   const graph = graphFor(level);
   const nestedMode = level !== 'home';
-  const focusCenter: Node = nestedMode ? { ...graph.center, x: 110, y: 0 } : graph.center;
+  const focusCenter: Node = nestedMode ? { ...graph.center, x: 90, y: 0 } : graph.center;
   const displayNodes: Node[] = nestedMode
-    ? graph.nodes.map((node) => ({ ...node, x: 110 + node.x * 0.72, y: node.y * 0.72 }))
+    ? graph.nodes.map((node) => ({ ...node, x: 90 + node.x * 0.56, y: node.y * 0.56 }))
     : graph.nodes;
-  const displayRoot: Node | null = nestedMode ? { ...homeGraph.center, x: -310, y: 0, size: 126 } : null;
+  const displayRoot: Node | null = nestedMode ? { ...homeGraph.center, x: -180, y: 0, size: 110 } : null;
   const allNodes = useMemo(() => nestedMode ? [displayRoot as Node, focusCenter, ...displayNodes] : [graph.center, ...displayNodes], [nestedMode, displayRoot, focusCenter, displayNodes, graph]);
   const activeId = hovered ?? selected;
   const activeNode = allNodes.find((node) => node.id === activeId);
@@ -98,7 +98,7 @@ export default function Home() {
   const trace = level === 'home' ? ['NAYAN ASATI'] : ['NAYAN ASATI', levelLabels[level]];
 
   const resetView = (nextLevel: Level = 'home') => {
-    setLevel(nextLevel); setScale(nextLevel === 'home' ? 1 : 1.16); setPan({ x: 0, y: 0 }); setHovered(null); setSelected(nextLevel === 'home' ? 'nayan' : graphFor(nextLevel).center.id); setFocusIndex(0); velocity.current = { x: 0, y: 0 };
+    setLevel(nextLevel); setScale(nextLevel === 'home' ? 1 : 0.96); setPan({ x: nextLevel === 'home' ? 0 : 40, y: 0 }); setHovered(null); setSelected(nextLevel === 'home' ? 'nayan' : graphFor(nextLevel).center.id); setFocusIndex(0); velocity.current = { x: 0, y: 0 };
   };
   const zoom = (factor: number, origin?: Point) => setScale((current) => {
     const next = Math.min(2.65, Math.max(0.58, current * factor));
@@ -110,12 +110,7 @@ export default function Home() {
     setSelected(node.id);
     const nextLevel = childLinks[node.id];
     if (nextLevel && level !== nextLevel) {
-      setHovered(null); setOpening(true);
-      setLevel(nextLevel);
-      setScale(level === 'home' ? 1.18 : 1.22);
-      setPan({ x: -18, y: 0 });
-      window.setTimeout(() => setOpening(false), 480);
-      return;
+      setHovered(null); setOpening(true); setLevel(nextLevel); setScale(0.96); setPan({ x: 40, y: 0 }); window.setTimeout(() => setOpening(false), 480); return;
     }
     const link = externalLinks[node.id];
     if (link) window.open(link, '_blank', 'noopener,noreferrer');
@@ -136,14 +131,14 @@ export default function Home() {
       <svg className="flow-lines" viewBox="-520 -410 1040 820" aria-hidden="true">
         {nestedMode && displayRoot && <line className={activeId === focusCenter.id || activeId === displayRoot.id ? 'active' : ''} x1={displayRoot.x} y1={displayRoot.y} x2={focusCenter.x} y2={focusCenter.y} />}
         {(nestedMode ? displayNodes : graph.nodes).map((node) => <line key={node.id} className={activeId === node.id ? 'active' : ''} x1={focusCenter.x} y1={focusCenter.y} x2={node.x} y2={node.y} />)}
-        {level === 'jobpilot' && <><line className={activeId === 'nextjs' || activeId === 'typescript' ? 'active' : ''} x1={displayNodes.find((n) => n.id === 'technology')?.x ?? 333} y1={displayNodes.find((n) => n.id === 'technology')?.y ?? -90} x2={displayNodes.find((n) => n.id === 'nextjs')?.x ?? 229} y2={displayNodes.find((n) => n.id === 'nextjs')?.y ?? 83} /><line className={activeId === 'ai' ? 'active' : ''} x1={displayNodes.find((n) => n.id === 'system')?.x ?? 110} y1={displayNodes.find((n) => n.id === 'system')?.y ?? -166} x2={displayNodes.find((n) => n.id === 'ai')?.x ?? 124} y2={displayNodes.find((n) => n.id === 'ai')?.y ?? 176} /></>}
+        {level === 'jobpilot' && <><line className={activeId === 'nextjs' || activeId === 'typescript' ? 'active' : ''} x1={displayNodes.find((n) => n.id === 'technology')?.x ?? 264} y1={displayNodes.find((n) => n.id === 'technology')?.y ?? -70} x2={displayNodes.find((n) => n.id === 'nextjs')?.x ?? 182} y2={displayNodes.find((n) => n.id === 'nextjs')?.y ?? 64} /><line className={activeId === 'ai' ? 'active' : ''} x1={displayNodes.find((n) => n.id === 'system')?.x ?? 90} y1={displayNodes.find((n) => n.id === 'system')?.y ?? -129} x2={displayNodes.find((n) => n.id === 'ai')?.x ?? 101} y2={displayNodes.find((n) => n.id === 'ai')?.y ?? 137} /></>}
       </svg>
       {(nestedMode && displayRoot ? [displayRoot, focusCenter, ...displayNodes] : [graph.center, ...displayNodes]).map((node, index) => <button key={`${node.id}-${index}`} data-node className={`flow-node ${node.id === focusCenter.id ? 'center focus-center' : ''} ${node.id === 'nayan' ? 'root-persistent' : ''} ${activeId === node.id ? 'active' : ''}`} style={{ left: `calc(50% + ${node.x}px)`, top: `calc(50% + ${node.y}px)` } as React.CSSProperties} onClick={() => selectNode(node)} onMouseEnter={() => { setHovered(node.id); setSelected(node.id); }} onMouseLeave={() => setHovered(null)} onFocus={() => setHovered(node.id)} onBlur={() => setHovered(null)} aria-label={node.id === 'nayan' ? 'Return home' : `Explore ${node.label}`}><span className="node-halo" /><span className="node-core">{node.label}</span>{node.description && <span className="node-description">{node.description}</span>}</button>)}
     </div></section>
 
     <aside className="flow-detail phase4-detail" aria-live="polite"><span>{detail.eyebrow}</span><h1>{activeNode?.label ?? detail.title}</h1><p>{activeNode?.description ?? detail.body}</p><div className="detail-tags">{detail.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>{detail.links && <div className="detail-links">{detail.links.map((link) => <a key={link.href} href={link.href} target="_blank" rel="noreferrer">{link.label} <ExternalLink size={12} /></a>)}</div>}</aside>
     <aside className="flow-path" aria-label="Path status"><span>TRACE</span><strong>{activeNode?.label ?? levelLabels[level]}</strong><small>{level === 'home' ? 'ROOT NODE' : `FOCUS ${Math.round(scale * 100)}% · ROOT VISIBLE`}</small></aside>
-    <aside className="flow-controls" aria-label="Network controls">{level !== 'home' && <button onClick={() => resetView('home')} aria-label="Back to home"><ArrowLeft size={14} /></button>}<button onClick={() => zoom(0.9)} aria-label="Zoom out"><Minus size={14} /></button><span>{Math.round(scale * 100)}%</span><button onClick={() => zoom(1.1)} aria-label="Zoom in"><Plus size={14} /></button><button onClick={() => resetView(level)} aria-label="Reset view"><RotateCcw size={14} /></button><button onClick={() => { setPan({ x: 0, y: 0 }); setScale(level === 'home' ? 1 : 1.16); }} aria-label="Center network"><LocateFixed size={14} /></button></aside>
+    <aside className="flow-controls" aria-label="Network controls">{level !== 'home' && <button onClick={() => resetView('home')} aria-label="Back to home"><ArrowLeft size={14} /></button>}<button onClick={() => zoom(0.9)} aria-label="Zoom out"><Minus size={14} /></button><span>{Math.round(scale * 100)}%</span><button onClick={() => zoom(1.1)} aria-label="Zoom in"><Plus size={14} /></button><button onClick={() => resetView(level)} aria-label="Reset view"><RotateCcw size={14} /></button><button onClick={() => { setPan({ x: 0, y: 0 }); setScale(level === 'home' ? 1 : 0.96); }} aria-label="Center network"><LocateFixed size={14} /></button></aside>
     <footer className="flow-footer"><div><small>PHASE 04</small><strong>CINEMATIC NAVIGATION</strong></div><div className="flow-status">{level === 'home' ? 'HOME / 06 CONNECTIONS' : `${homeGraph.center.label} / ${graph.nodes.length} FOCUS NODES`}</div><div className="flow-footer-right">ESC / HOME · ARROWS / TRACE</div></footer>
   </main>;
 }
