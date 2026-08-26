@@ -52,6 +52,7 @@ const childLinks: Record<NodeId, Level | undefined> = {
   nayan: 'home', projects: 'projects', jobpilot: 'jobpilot', ironakhada: 'ironakhada', portfolio: 'portfolio', photography: 'photography', pylauncher: 'pylauncher', experience: 'experience', skills: 'skills', philosophy: 'philosophy', contact: 'contact', about: 'about',
   problem: undefined, system: undefined, technology: undefined, nextjs: undefined, typescript: undefined, ai: undefined, fitness: undefined, build: undefined, flow: undefined, interactive: undefined, phases: undefined, archive: undefined, gallery: undefined, automation: undefined, python: undefined, launcher: undefined, interface: undefined, engineering: undefined, manufacturing: undefined, proposal: undefined, frontend: undefined, platforms: undefined, api: undefined, responsive: undefined, email: undefined, linkedin: undefined, github: undefined, engineer: undefined, developer: undefined, selftaught: undefined,
 };
+const parentOf: Partial<Record<Level, Level>> = { projects: 'home', jobpilot: 'projects', ironakhada: 'projects', portfolio: 'projects', photography: 'projects', pylauncher: 'projects', experience: 'home', skills: 'home', philosophy: 'home', contact: 'home', about: 'home' };
 const externalLinks: Partial<Record<NodeId, string>> = { jobpilot: 'https://github.com/Nayan1209/jobpilot-ai', photography: 'https://ghoul-photography.vercel.app/', email: 'mailto:nayanasati2001@gmail.com', linkedin: 'https://linkedin.com/in/nayan-1209-asati', github: 'https://github.com/Nayan1209' };
 const details: Record<Level, Detail> = {
   home: { eyebrow: 'NAYAN / HOME', title: 'Engineer → Developer', body: 'A self-taught developer building full products end-to-end, backed by an engineering mindset for root-cause analysis, documentation and cross-functional problem solving.', tags: ['Web Development', 'Engineering', 'AI-assisted workflows'] },
@@ -69,6 +70,7 @@ const details: Record<Level, Detail> = {
 };
 const levelLabels: Record<Level, string> = { home: 'HOME', projects: 'PROJECTS', jobpilot: 'JOBPILOT AI', ironakhada: 'IRON AKHADA', portfolio: 'PORTFOLIO', photography: 'GHOUL PHOTOGRAPHY', pylauncher: 'PYLAUNCHER', experience: 'EXPERIENCE', skills: 'SKILLS', philosophy: 'PHILOSOPHY', contact: 'CONTACT', about: 'ABOUT' };
 function graphFor(level: Level): Graph { return level === 'home' ? homeGraph : graphs[level]; }
+function nodeFor(level: Level): Node { return graphFor(level).center; }
 
 export default function Home() {
   const [level, setLevel] = useState<Level>('home');
@@ -86,19 +88,50 @@ export default function Home() {
   const animation = useRef<number | null>(null);
   const graph = graphFor(level);
   const nestedMode = level !== 'home';
-  const focusCenter: Node = nestedMode ? { ...graph.center, x: 90, y: 0 } : graph.center;
+
+  // Every drill-down keeps the complete ancestry on screen. Each older level gets
+  // progressively smaller and farther left, while the current level gets the focus.
+  const ancestry = useMemo(() => {
+    const chain: Level[] = [];
+    let cursor: Level = level;
+    while (cursor !== 'home') {
+      chain.unshift(cursor);
+      cursor = parentOf[cursor] ?? 'home';
+    }
+    return ['home', ...chain];
+  }, [level]);
+
+  const currentIndex = ancestry.length - 1;
+  const ancestorNodes = ancestry.map((item, index) => {
+    const node = nodeFor(item);
+    const distance = currentIndex - index;
+    return {
+      ...node,
+      x: -340 + distance * 165,
+      y: 0,
+      size: distance === 0 ? node.size : Math.max(58, (node.size ?? 110) * Math.pow(0.72, distance)),
+      ancestorDepth: distance,
+    };
+  });
+  const focusCenter = nestedMode ? ancestorNodes[currentIndex] : graph.center;
   const displayNodes: Node[] = nestedMode
-    ? graph.nodes.map((node) => ({ ...node, x: 90 + node.x * 0.56, y: node.y * 0.56 }))
+    ? graph.nodes.map((node) => ({ ...node, x: focusCenter.x + node.x * 0.48, y: node.y * 0.48 }))
     : graph.nodes;
-  const displayRoot: Node | null = nestedMode ? { ...homeGraph.center, x: -180, y: 0, size: 110 } : null;
-  const allNodes = useMemo(() => nestedMode ? [displayRoot as Node, focusCenter, ...displayNodes] : [graph.center, ...displayNodes], [nestedMode, displayRoot, focusCenter, displayNodes, graph]);
+  const rootChain = nestedMode ? ancestorNodes : [];
+  const allNodes = useMemo(() => nestedMode ? [...rootChain, ...displayNodes] : [graph.center, ...displayNodes], [nestedMode, rootChain, displayNodes, graph]);
   const activeId = hovered ?? selected;
   const activeNode = allNodes.find((node) => node.id === activeId);
   const detail = details[level];
-  const trace = level === 'home' ? ['NAYAN ASATI'] : ['NAYAN ASATI', levelLabels[level]];
+  const trace = level === 'home' ? ['NAYAN ASATI'] : ancestry.map((item) => levelLabels[item]);
 
   const resetView = (nextLevel: Level = 'home') => {
-    setLevel(nextLevel); setScale(nextLevel === 'home' ? 1 : 0.96); setPan({ x: nextLevel === 'home' ? 0 : 40, y: 0 }); setHovered(null); setSelected(nextLevel === 'home' ? 'nayan' : graphFor(nextLevel).center.id); setFocusIndex(0); velocity.current = { x: 0, y: 0 };
+    setLevel(nextLevel);
+    setScale(nextLevel === 'home' ? 1 : Math.max(0.74, 1 - (ancestry.length - 1) * 0.06));
+    setPan({ x: 0, y: 0 });
+    setHovered(null);
+    setSelected(nextLevel === 'home' ? 'nayan' : nodeFor(nextLevel).id);
+    setFocusIndex(0);
+    velocity.current = { x: 0, y: 0 };
   };
   const zoom = (factor: number, origin?: Point) => setScale((current) => {
     const next = Math.min(2.65, Math.max(0.58, current * factor));
@@ -110,7 +143,14 @@ export default function Home() {
     setSelected(node.id);
     const nextLevel = childLinks[node.id];
     if (nextLevel && level !== nextLevel) {
-      setHovered(null); setOpening(true); setLevel(nextLevel); setScale(0.96); setPan({ x: 40, y: 0 }); window.setTimeout(() => setOpening(false), 480); return;
+      setHovered(null);
+      setOpening(true);
+      setLevel(nextLevel);
+      const nextDepth = nextLevel === 'home' ? 0 : ancestry.length;
+      setScale(Math.max(0.68, 1 - nextDepth * 0.055));
+      setPan({ x: 0, y: 0 });
+      window.setTimeout(() => setOpening(false), 480);
+      return;
     }
     const link = externalLinks[node.id];
     if (link) window.open(link, '_blank', 'noopener,noreferrer');
@@ -126,19 +166,19 @@ export default function Home() {
   return <main className="flow" ref={stage} onWheel={onWheel} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={stopDrag} onPointerCancel={stopDrag}>
     <div className="flow-grid" /><div className="flow-vignette" />
     <header className="flow-header"><button className="flow-wordmark" onClick={() => resetView('home')} aria-label="Return home">FLOW<span>.</span></button><div className="flow-header-meta"><span>PORTFOLIO / 04</span><span>FLOW NETWORK</span></div></header>
-    <div className="flow-trace" aria-label="Current navigation path">{trace.map((item, index) => <span key={item} className={index === trace.length - 1 ? 'current' : ''}>{item}{index < trace.length - 1 && <b>→</b>}</span>)}</div>
+    <div className="flow-trace" aria-label="Current navigation path">{trace.map((item, index) => <span key={`${item}-${index}`} className={index === trace.length - 1 ? 'current' : ''}>{item}{index < trace.length - 1 && <b>→</b>}</span>)}</div>
     <section className={`flow-stage ${dragging ? 'is-dragging' : ''} ${opening ? 'is-opening' : ''}`} aria-label="Nayan Asati interactive portfolio network"><div className="flow-world" style={{ transform: `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${scale})` }}>
       <svg className="flow-lines" viewBox="-520 -410 1040 820" aria-hidden="true">
-        {nestedMode && displayRoot && <line className={activeId === focusCenter.id || activeId === displayRoot.id ? 'active' : ''} x1={displayRoot.x} y1={displayRoot.y} x2={focusCenter.x} y2={focusCenter.y} />}
+        {nestedMode && ancestorNodes.slice(1).map((node, index) => { const previous = ancestorNodes[index]; return <line key={`ancestor-${node.id}`} className={activeId === node.id || activeId === previous.id ? 'active' : ''} x1={previous.x} y1={previous.y} x2={node.x} y2={node.y} />; })}
         {(nestedMode ? displayNodes : graph.nodes).map((node) => <line key={node.id} className={activeId === node.id ? 'active' : ''} x1={focusCenter.x} y1={focusCenter.y} x2={node.x} y2={node.y} />)}
-        {level === 'jobpilot' && <><line className={activeId === 'nextjs' || activeId === 'typescript' ? 'active' : ''} x1={displayNodes.find((n) => n.id === 'technology')?.x ?? 264} y1={displayNodes.find((n) => n.id === 'technology')?.y ?? -70} x2={displayNodes.find((n) => n.id === 'nextjs')?.x ?? 182} y2={displayNodes.find((n) => n.id === 'nextjs')?.y ?? 64} /><line className={activeId === 'ai' ? 'active' : ''} x1={displayNodes.find((n) => n.id === 'system')?.x ?? 90} y1={displayNodes.find((n) => n.id === 'system')?.y ?? -129} x2={displayNodes.find((n) => n.id === 'ai')?.x ?? 101} y2={displayNodes.find((n) => n.id === 'ai')?.y ?? 137} /></>}
+        {level === 'jobpilot' && <><line className={activeId === 'nextjs' || activeId === 'typescript' ? 'active' : ''} x1={displayNodes.find((n) => n.id === 'technology')?.x ?? 239} y1={displayNodes.find((n) => n.id === 'technology')?.y ?? -60} x2={displayNodes.find((n) => n.id === 'nextjs')?.x ?? 169} y2={displayNodes.find((n) => n.id === 'nextjs')?.y ?? 55} /><line className={activeId === 'ai' ? 'active' : ''} x1={displayNodes.find((n) => n.id === 'system')?.x ?? 90} y1={displayNodes.find((n) => n.id === 'system')?.y ?? -110} x2={displayNodes.find((n) => n.id === 'ai')?.x ?? 100} y2={displayNodes.find((n) => n.id === 'ai')?.y ?? 118} /></>}
       </svg>
-      {(nestedMode && displayRoot ? [displayRoot, focusCenter, ...displayNodes] : [graph.center, ...displayNodes]).map((node, index) => <button key={`${node.id}-${index}`} data-node className={`flow-node ${node.id === focusCenter.id ? 'center focus-center' : ''} ${node.id === 'nayan' ? 'root-persistent' : ''} ${activeId === node.id ? 'active' : ''}`} style={{ left: `calc(50% + ${node.x}px)`, top: `calc(50% + ${node.y}px)` } as React.CSSProperties} onClick={() => selectNode(node)} onMouseEnter={() => { setHovered(node.id); setSelected(node.id); }} onMouseLeave={() => setHovered(null)} onFocus={() => setHovered(node.id)} onBlur={() => setHovered(null)} aria-label={node.id === 'nayan' ? 'Return home' : `Explore ${node.label}`}><span className="node-halo" /><span className="node-core">{node.label}</span>{node.description && <span className="node-description">{node.description}</span>}</button>)}
+      {(nestedMode ? [...ancestorNodes, ...displayNodes] : [graph.center, ...displayNodes]).map((node, index) => <button key={`${node.id}-${index}`} data-node className={`flow-node ${node.id === focusCenter.id ? 'center focus-center' : ''} ${node.ancestorDepth ? `ancestor-depth-${node.ancestorDepth}` : ''} ${node.id === 'nayan' ? 'root-persistent' : ''} ${activeId === node.id ? 'active' : ''}`} style={{ left: `calc(50% + ${node.x}px)`, top: `calc(50% + ${node.y}px)`, ...(node.ancestorDepth ? { ['--ancestor-scale' as string]: Math.pow(0.72, node.ancestorDepth) } : {}) } as React.CSSProperties} onClick={() => selectNode(node)} onMouseEnter={() => { setHovered(node.id); setSelected(node.id); }} onMouseLeave={() => setHovered(null)} onFocus={() => setHovered(node.id)} onBlur={() => setHovered(null)} aria-label={node.id === 'nayan' ? 'Return home' : `Explore ${node.label}`}><span className="node-halo" /><span className="node-core">{node.label}</span>{node.description && <span className="node-description">{node.description}</span>}</button>)}
     </div></section>
 
     <aside className="flow-detail phase4-detail" aria-live="polite"><span>{detail.eyebrow}</span><h1>{activeNode?.label ?? detail.title}</h1><p>{activeNode?.description ?? detail.body}</p><div className="detail-tags">{detail.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>{detail.links && <div className="detail-links">{detail.links.map((link) => <a key={link.href} href={link.href} target="_blank" rel="noreferrer">{link.label} <ExternalLink size={12} /></a>)}</div>}</aside>
-    <aside className="flow-path" aria-label="Path status"><span>TRACE</span><strong>{activeNode?.label ?? levelLabels[level]}</strong><small>{level === 'home' ? 'ROOT NODE' : `FOCUS ${Math.round(scale * 100)}% · ROOT VISIBLE`}</small></aside>
-    <aside className="flow-controls" aria-label="Network controls">{level !== 'home' && <button onClick={() => resetView('home')} aria-label="Back to home"><ArrowLeft size={14} /></button>}<button onClick={() => zoom(0.9)} aria-label="Zoom out"><Minus size={14} /></button><span>{Math.round(scale * 100)}%</span><button onClick={() => zoom(1.1)} aria-label="Zoom in"><Plus size={14} /></button><button onClick={() => resetView(level)} aria-label="Reset view"><RotateCcw size={14} /></button><button onClick={() => { setPan({ x: 0, y: 0 }); setScale(level === 'home' ? 1 : 0.96); }} aria-label="Center network"><LocateFixed size={14} /></button></aside>
+    <aside className="flow-path" aria-label="Path status"><span>TRACE</span><strong>{activeNode?.label ?? levelLabels[level]}</strong><small>{level === 'home' ? 'ROOT NODE' : `DEPTH ${ancestry.length - 1} · ANCESTRY VISIBLE`}</small></aside>
+    <aside className="flow-controls" aria-label="Network controls">{level !== 'home' && <button onClick={() => resetView('home')} aria-label="Back to home"><ArrowLeft size={14} /></button>}<button onClick={() => zoom(0.9)} aria-label="Zoom out"><Minus size={14} /></button><span>{Math.round(scale * 100)}%</span><button onClick={() => zoom(1.1)} aria-label="Zoom in"><Plus size={14} /></button><button onClick={() => resetView(level)} aria-label="Reset view"><RotateCcw size={14} /></button><button onClick={() => { setPan({ x: 0, y: 0 }); setScale(level === 'home' ? 1 : Math.max(0.68, 1 - (ancestry.length - 1) * 0.055)); }} aria-label="Center network"><LocateFixed size={14} /></button></aside>
     <footer className="flow-footer"><div><small>PHASE 04</small><strong>CINEMATIC NAVIGATION</strong></div><div className="flow-status">{level === 'home' ? 'HOME / 06 CONNECTIONS' : `${homeGraph.center.label} / ${graph.nodes.length} FOCUS NODES`}</div><div className="flow-footer-right">ESC / HOME · ARROWS / TRACE</div></footer>
   </main>;
 }
