@@ -1,8 +1,8 @@
-name: Phase One Build
+name: Flow Portfolio Build
 
 on:
   push:
-    branches: [phase-1]
+    branches: [phase-2]
   pull_request:
     branches: [main]
 
