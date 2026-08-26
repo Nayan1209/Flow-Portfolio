@@ -92,7 +92,7 @@ export default function Home() {
   const trace = level === 'home' ? ['NAYAN ASATI'] : ['NAYAN ASATI', levelLabels[level]];
 
   const resetView = (nextLevel: Level = 'home') => {
-    setOpening(false); setLevel(nextLevel); setScale(nextLevel === 'home' ? 1 : 1.04); setPan({ x: 0, y: 0 }); setHovered(null); setSelected(nextLevel === 'home' ? 'nayan' : graphFor(nextLevel).center.id); setFocusIndex(0); velocity.current = { x: 0, y: 0 };
+    setLevel(nextLevel); setScale(nextLevel === 'home' ? 1 : 1.04); setPan({ x: 0, y: 0 }); setHovered(null); setSelected(nextLevel === 'home' ? 'nayan' : graphFor(nextLevel).center.id); setFocusIndex(0); velocity.current = { x: 0, y: 0 };
   };
   const zoom = (factor: number, origin?: Point) => setScale((current) => {
     const next = Math.min(2.65, Math.max(0.58, current * factor));
@@ -125,7 +125,6 @@ export default function Home() {
     <div className="flow-grid" /><div className="flow-vignette" />
     <header className="flow-header"><button className="flow-wordmark" onClick={() => resetView('home')} aria-label="Return home">FLOW<span>.</span></button><div className="flow-header-meta"><span>PORTFOLIO / 04</span><span>FLOW NETWORK</span></div></header>
     <div className="flow-trace" aria-label="Current navigation path">{trace.map((item, index) => <span key={item} className={index === trace.length - 1 ? 'current' : ''}>{item}{index < trace.length - 1 && <b>→</b>}</span>)}</div>
-    <div className="flow-instructions">SCROLL TO ZOOM <i /> HOVER TO TRACE <i /> CLICK TO EXPLORE <i /> ARROWS TO NAVIGATE</div>
     <section className={`flow-stage ${dragging ? 'is-dragging' : ''} ${opening ? 'is-opening' : ''}`} aria-label="Nayan Asati interactive portfolio network"><div className="flow-world" style={{ transform: `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${scale})` }}>
       <svg className="flow-lines" viewBox="-520 -410 1040 820" aria-hidden="true">
         {graph.nodes.map((node) => <line key={node.id} className={activeId === node.id ? 'active' : ''} x1={graph.center.x} y1={graph.center.y} x2={node.x} y2={node.y} />)}
