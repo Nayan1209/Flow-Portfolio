@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, Minus, Plus, RotateCcw, ExternalLink } from 'lucide-react';
 
 type NodeId = string;
-type Level = 'home' | 'projects' | 'jobpilot' | 'photography' | 'windows' | 'experience' | 'skills' | 'philosophy' | 'contact' | 'about';
+type Level = 'home' | 'projects' | 'jobpilot' | 'ironakhada' | 'portfolio' | 'photography' | 'pylauncher' | 'experience' | 'skills' | 'philosophy' | 'contact' | 'about';
 type Point = { x: number; y: number };
 type Node = { id: NodeId; label: string; x: number; y: number; size?: number; description?: string };
 type Graph = { center: Node; nodes: Node[] };
@@ -16,9 +16,11 @@ const homeGraph: Graph = { center: { id: 'nayan', label: 'NAYAN ASATI', x: 0, y:
 ] };
 
 const projectGraph: Graph = { center: { id: 'projects', label: 'PROJECTS', x: 0, y: 0, size: 112 }, nodes: [
-  { id: 'jobpilot', label: 'JOBPILOT AI', x: -300, y: -120, description: 'AI-assisted job outreach workflow' },
-  { id: 'photography', label: 'GHoul PHOTOGRAPHY', x: 0, y: -225, description: 'Cinematic photography archive and automated content workflows' },
-  { id: 'windows', label: 'WINDOWS UI', x: 300, y: -120, description: 'Interactive interface concept' },
+  { id: 'jobpilot', label: 'JOBPILOT AI', x: -360, y: -130, description: 'AI-assisted job outreach workflow' },
+  { id: 'ironakhada', label: 'IRON AKHADA', x: -180, y: -255, description: 'Fitness-focused web project' },
+  { id: 'portfolio', label: 'NAYAN ASATI PORTFOLIO', x: 180, y: -255, description: 'Interactive Flow portfolio experience' },
+  { id: 'photography', label: 'GHOUL PHOTOGRAPHY', x: 360, y: -130, description: 'Cinematic photography archive and automated content workflows' },
+  { id: 'pylauncher', label: 'PYLAUNCHER', x: 0, y: 250, description: 'Python-based launcher project' },
 ] };
 
 const jobpilotGraph: Graph = { center: { id: 'jobpilot', label: 'JOBPILOT AI', x: 0, y: 0, size: 118 }, nodes: [
@@ -28,16 +30,28 @@ const jobpilotGraph: Graph = { center: { id: 'jobpilot', label: 'JOBPILOT AI', x
   { id: 'nextjs', label: 'NEXT.JS', x: 165, y: 115 }, { id: 'typescript', label: 'TYPESCRIPT', x: 310, y: 225 }, { id: 'ai', label: 'AI AGENT', x: 20, y: 245 },
 ] };
 
+const ironAkhadaGraph: Graph = { center: { id: 'ironakhada', label: 'IRON AKHADA', x: 0, y: 0, size: 120 }, nodes: [
+  { id: 'fitness', label: 'FITNESS', x: -270, y: -145, description: 'Fitness-focused product direction.' },
+  { id: 'experience', label: 'EXPERIENCE', x: 0, y: -235, description: 'A focused interface built around the user journey.' },
+  { id: 'build', label: 'BUILD', x: 270, y: -145, description: 'Web implementation and iterative product development.' },
+] };
+
+const portfolioGraph: Graph = { center: { id: 'portfolio', label: 'NAYAN ASATI PORTFOLIO', x: 0, y: 0, size: 126 }, nodes: [
+  { id: 'flow', label: 'FLOW', x: -270, y: -145, description: 'Portfolio navigation designed as a connected system.' },
+  { id: 'interactive', label: 'INTERACTIVE', x: 0, y: -235, description: 'Drag, zoom, hover and click interactions.' },
+  { id: 'phases', label: 'PHASES', x: 270, y: -145, description: 'A phased build process from foundation to deep flows.' },
+] };
+
 const photographyGraph: Graph = { center: { id: 'photography', label: 'GHOUL PHOTOGRAPHY', x: 0, y: 0, size: 124 }, nodes: [
   { id: 'archive', label: 'ARCHIVE', x: -260, y: -150, description: 'A cinematic photography archive.' },
   { id: 'gallery', label: 'GALLERY', x: 0, y: -240, description: 'Responsive galleries built for visual browsing.' },
   { id: 'automation', label: 'AUTOMATION', x: 260, y: -150, description: 'Gemini AI and Instagram API workflows.' },
 ] };
 
-const windowsGraph: Graph = { center: { id: 'windows', label: 'WINDOWS UI', x: 0, y: 0, size: 116 }, nodes: [
-  { id: 'concept', label: 'CONCEPT', x: -250, y: -140, description: 'Interactive interface exploration.' },
-  { id: 'interaction', label: 'INTERACTION', x: 0, y: -230, description: 'A UI-first branch of the Flow portfolio work.' },
-  { id: 'repository', label: 'GITHUB', x: 250, y: -140, description: 'Repository-level exploration and implementation.' },
+const pylauncherGraph: Graph = { center: { id: 'pylauncher', label: 'PYLAUNCHER', x: 0, y: 0, size: 120 }, nodes: [
+  { id: 'python', label: 'PYTHON', x: -270, y: -145, description: 'Python-based application development.' },
+  { id: 'launcher', label: 'LAUNCHER', x: 0, y: -235, description: 'A utility-oriented launcher experience.' },
+  { id: 'interface', label: 'INTERFACE', x: 270, y: -145, description: 'Desktop interaction and usability.' },
 ] };
 
 const experienceGraph: Graph = { center: { id: 'experience', label: 'EXPERIENCE', x: 0, y: 0, size: 112 }, nodes: [
@@ -72,24 +86,26 @@ const aboutGraph: Graph = { center: { id: 'about', label: 'ABOUT', x: 0, y: 0, s
   { id: 'selftaught', label: 'SELF-TAUGHT', x: 285, y: -120, description: 'Hands-on learning across web development, APIs, deployment and AI-assisted workflows.' },
 ] };
 
-const graphs: Record<Exclude<Level, 'home'>, Graph> = { projects: projectGraph, jobpilot: jobpilotGraph, photography: photographyGraph, windows: windowsGraph, experience: experienceGraph, skills: skillsGraph, philosophy: philosophyGraph, contact: contactGraph, about: aboutGraph };
+const graphs: Record<Exclude<Level, 'home'>, Graph> = { projects: projectGraph, jobpilot: jobpilotGraph, ironakhada: ironAkhadaGraph, portfolio: portfolioGraph, photography: photographyGraph, pylauncher: pylauncherGraph, experience: experienceGraph, skills: skillsGraph, philosophy: philosophyGraph, contact: contactGraph, about: aboutGraph };
 
 const childLinks: Record<NodeId, Level | undefined> = {
-  nayan: 'home', projects: 'projects', jobpilot: 'jobpilot', photography: 'photography', windows: 'windows', experience: 'experience', skills: 'skills', philosophy: 'philosophy', contact: 'contact', about: 'about',
-  problem: undefined, system: undefined, technology: undefined, nextjs: undefined, typescript: undefined, ai: undefined, archive: undefined, gallery: undefined, automation: undefined, concept: undefined, interaction: undefined, repository: undefined, engineering: undefined, manufacturing: undefined, proposal: undefined, frontend: undefined, python: undefined, platforms: undefined, api: undefined, responsive: undefined, email: undefined, linkedin: undefined, github: undefined, engineer: undefined, developer: undefined, selftaught: undefined,
+  nayan: 'home', projects: 'projects', jobpilot: 'jobpilot', ironakhada: 'ironakhada', portfolio: 'portfolio', photography: 'photography', pylauncher: 'pylauncher', experience: 'experience', skills: 'skills', philosophy: 'philosophy', contact: 'contact', about: 'about',
+  problem: undefined, system: undefined, technology: undefined, nextjs: undefined, typescript: undefined, ai: undefined, fitness: undefined, build: undefined, flow: undefined, interactive: undefined, phases: undefined, archive: undefined, gallery: undefined, automation: undefined, python: undefined, launcher: undefined, interface: undefined, engineering: undefined, manufacturing: undefined, proposal: undefined, frontend: undefined, platforms: undefined, api: undefined, responsive: undefined, email: undefined, linkedin: undefined, github: undefined, engineer: undefined, developer: undefined, selftaught: undefined,
 };
 
 const externalLinks: Partial<Record<NodeId, string>> = {
-  jobpilot: 'https://github.com/Nayan1209/jobpilot-ai', photography: 'https://ghoul-photography.vercel.app/', windows: 'https://github.com/Nayan1209',
-  email: 'mailto:nayanasati2001@gmail.com', linkedin: 'https://linkedin.com/in/nayan-1209-asati', github: 'https://github.com/Nayan1209', repository: 'https://github.com/Nayan1209',
+  jobpilot: 'https://github.com/Nayan1209/jobpilot-ai', photography: 'https://ghoul-photography.vercel.app/',
+  email: 'mailto:nayanasati2001@gmail.com', linkedin: 'https://linkedin.com/in/nayan-1209-asati', github: 'https://github.com/Nayan1209',
 };
 
 const details: Record<Level, Detail> = {
   home: { eyebrow: 'NAYAN / HOME', title: 'Engineer → Developer', body: 'A self-taught developer building full products end-to-end, backed by an engineering mindset for root-cause analysis, documentation and cross-functional problem solving.', tags: ['Web Development', 'Engineering', 'AI-assisted workflows'] },
-  projects: { eyebrow: 'NAYAN / PROJECTS', title: 'Selected work', body: 'Explore the work as a network: each project opens into its own deeper branch instead of becoming a conventional portfolio card.', tags: ['Portfolio 2026', 'IRON AKHADA 2026', 'Ghoul Photography 2026'] },
-  jobpilot: { eyebrow: 'PROJECT / JOBPILOT AI', title: 'Job outreach as a flow', body: 'A project branch for exploring the problem, system and technology behind an AI-assisted job outreach workflow.', tags: ['Next.js', 'TypeScript', 'AI'] },
+  projects: { eyebrow: 'NAYAN / PROJECTS', title: 'Selected work', body: 'Five selected projects currently form the Projects network. Each project can open into its own deeper flow.', tags: ['JobPilot AI', 'Iron Akhada', 'Portfolio', 'Ghoul Photography', 'PyLauncher'] },
+  jobpilot: { eyebrow: 'PROJECT / JOBPILOT AI', title: 'Job outreach as a flow', body: 'A project branch for exploring the problem, system and technology behind an AI-assisted job outreach workflow.', tags: ['Next.js', 'TypeScript', 'AI'], links: [{ label: 'OPEN GITHUB', href: 'https://github.com/Nayan1209/jobpilot-ai' }] },
+  ironakhada: { eyebrow: 'PROJECT / IRON AKHADA', title: 'Iron Akhada', body: 'A dedicated project branch for the Iron Akhada experience, kept separate from the other portfolio projects.', tags: ['Web', 'Fitness', 'Product'] },
+  portfolio: { eyebrow: 'PROJECT / NAYAN ASATI PORTFOLIO', title: 'The Flow portfolio', body: 'The portfolio itself is treated as a project: an interactive network where navigation, motion and content are part of the experience.', tags: ['Next.js', 'Interaction', 'Flow UI'] },
   photography: { eyebrow: 'PROJECT / GHOUL PHOTOGRAPHY', title: 'A cinematic archive', body: 'A responsive photography archive with automated content workflows, built around visual discovery rather than a conventional grid.', tags: ['HTML5', 'CSS3', 'JavaScript', 'Gemini AI', 'Instagram API'], links: [{ label: 'OPEN PROJECT', href: 'https://ghoul-photography.vercel.app/' }] },
-  windows: { eyebrow: 'PROJECT / WINDOWS UI', title: 'Interface exploration', body: 'An interactive UI concept represented as another branch of the Flow system, keeping interface work connected to the larger portfolio topology.', tags: ['UI', 'Interaction', 'GitHub'], links: [{ label: 'OPEN GITHUB', href: 'https://github.com/Nayan1209' }] },
+  pylauncher: { eyebrow: 'PROJECT / PYLAUNCHER', title: 'Python utility project', body: 'A dedicated branch for PyLauncher, keeping the Python project visible alongside the web products without mixing the project list.', tags: ['Python', 'Launcher', 'Desktop'] },
   experience: { eyebrow: 'NAYAN / EXPERIENCE', title: 'Engineering in practice', body: 'Experience spans technical proposals, customer support, shift operations, SAP/HMI workflows, root-cause analysis and quality improvement.', tags: ['Analyser Instrument Company', 'Ashok Leyland', 'Root-cause analysis'] },
   skills: { eyebrow: 'NAYAN / SKILLS', title: 'A practical stack', body: 'The skill network reflects the tools and technologies listed in the professional profile, organized by how they support product delivery.', tags: ['JavaScript', 'Python', 'React', 'FastAPI', 'GitHub Actions'] },
   philosophy: { eyebrow: 'NAYAN / PHILOSOPHY', title: 'Think. Build. Ship.', body: 'The portfolio connects engineering discipline with modern development: understand the root, build the system end-to-end, then use leverage to ship working software.', tags: ['Root cause', 'End-to-end', 'Leverage'] },
@@ -112,7 +128,7 @@ export default function Home() {
   const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => { if (!dragging) return; const dx = event.clientX - dragStart.current.x; const dy = event.clientY - dragStart.current.y; setPan({ x: panStart.current.x + dx, y: panStart.current.y + dy }); velocity.current = { x: dx * 0.045, y: dy * 0.045 }; };
   const stopDrag = () => { setDragging(false); if (animation.current) cancelAnimationFrame(animation.current); const coast = () => { velocity.current.x *= 0.91; velocity.current.y *= 0.91; if (Math.abs(velocity.current.x) + Math.abs(velocity.current.y) < 0.15) return; setPan((p) => ({ x: p.x + velocity.current.x, y: p.y + velocity.current.y })); animation.current = requestAnimationFrame(coast); }; animation.current = requestAnimationFrame(coast); };
   useEffect(() => () => { if (animation.current) cancelAnimationFrame(animation.current); }, []);
-  useEffect(() => { const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') resetView(level === 'home' ? 'home' : 'home'); if (event.key === '+' || event.key === '=') zoom(1.08); if (event.key === '-') zoom(0.925); if (event.key === '0') resetView(level); }; window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey); }, [level]);
+  useEffect(() => { const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') resetView('home'); if (event.key === '+' || event.key === '=') zoom(1.08); if (event.key === '-') zoom(0.925); if (event.key === '0') resetView(level); }; window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey); }, [level]);
 
   return <main className="flow" ref={stage} onWheel={onWheel} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={stopDrag} onPointerCancel={stopDrag}>
     <div className="flow-grid" /><div className="flow-vignette" />
@@ -128,7 +144,6 @@ export default function Home() {
     </div></section>
 
     <aside className="flow-detail phase3-detail" aria-live="polite"><span>{detail.eyebrow}</span><h1>{activeNode?.label ?? detail.title}</h1><p>{activeNode?.description ?? detail.body}</p><div className="detail-tags">{detail.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>{detail.links && <div className="detail-links">{detail.links.map((link) => <a key={link.href} href={link.href} target="_blank" rel="noreferrer">{link.label} <ExternalLink size={12} /></a>)}</div>}</aside>
-
     <aside className="flow-controls" aria-label="Network controls">{level !== 'home' && <button onClick={() => resetView('home')} aria-label="Back to home"><ArrowLeft size={14} /></button>}<button onClick={() => zoom(0.9)} aria-label="Zoom out"><Minus size={14} /></button><span>{Math.round(scale * 100)}%</span><button onClick={() => zoom(1.1)} aria-label="Zoom in"><Plus size={14} /></button><button onClick={() => resetView(level)} aria-label="Reset view"><RotateCcw size={14} /></button></aside>
     <footer className="flow-footer"><div><small>PHASE 03</small><strong>DEEP FLOW</strong></div><div className="flow-status">{level === 'home' ? 'HOME / 06 CONNECTIONS' : `${graph.center.label} / ${graph.nodes.length} NODES`}</div><div className="flow-footer-right">{level === 'home' ? 'ESC / RESET' : 'ESC / HOME'}</div></footer>
   </main>;
