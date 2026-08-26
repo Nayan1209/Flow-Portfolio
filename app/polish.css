@@ -15,3 +15,9 @@
 .flow-footer{padding:25px 34px}.flow-footer strong{font-size:11px}.flow-status{color:#78838f}.flow-footer small{font-size:0}.flow-footer small::after{content:'PHASE 05';font-size:9px}.flow-footer strong{font-size:0}.flow-footer strong::after{content:'FINAL POLISH';font:600 11px/1 Inter,sans-serif;letter-spacing:.03em}
 @media(max-width:720px){.flow-header{height:66px;padding-inline:18px}.flow-trace{left:18px;top:88px;font-size:7px;max-width:calc(100vw - 36px);white-space:nowrap;overflow:hidden}.flow-instructions{top:108px}.flow-detail{left:18px;bottom:70px;max-width:calc(100vw - 36px);padding:12px}.flow-detail h1{font-size:15px}.flow-path{right:18px;bottom:70px}.flow-controls{right:12px}.flow-footer{padding:15px 18px}.flow-world{transition-duration:.24s}}
 @media(prefers-reduced-motion:reduce){.flow-world,.flow-node,.flow-controls button,.flow-wordmark{transition:none!important}.flow-trace,.flow-path{scroll-behavior:auto}}
+
+/* Final identity cleanup: replace the old FLOW wordmark and remove phase labeling. */
+.flow-wordmark{font-size:0}
+.flow-wordmark::before{content:'NAYAN';font:700 20px/1 Inter,sans-serif;letter-spacing:-.055em}
+.flow-wordmark span{display:none}
+.flow-footer>div:first-child{display:none}
