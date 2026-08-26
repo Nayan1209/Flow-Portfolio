@@ -40,6 +40,8 @@ button { font: inherit; }
 .flow-node.active .node-core { box-shadow: 0 0 35px rgba(255,255,255,.13), inset 0 0 18px rgba(255,255,255,.035); }
 .flow-node:hover .node-halo, .flow-node:focus-visible .node-halo, .flow-node.active .node-halo { opacity: .65; transform: scale(1); animation: pulse 1.8s ease-out infinite; }
 .flow-node.center { --node-size: 150px; z-index: 8; animation: centerBreathe 6s ease-in-out infinite; }
+.flow-node.center.focus-center { --node-size: 132px; z-index: 10; }
+.flow-node.root-persistent { --node-size: 110px; z-index: 9; }
 .flow-node.center .node-core { background: #f3f4f2; border-color: #fff; color: #06080a; font-family: Inter, sans-serif; font-size: 14px; font-weight: 700; letter-spacing: -.02em; box-shadow: 0 0 55px rgba(255,255,255,.07); }
 .flow-node.center .node-core::after { background: linear-gradient(115deg, transparent 20%, rgba(0,0,0,.08) 50%, transparent 80%); }
 .flow-node.center .node-halo { inset: -15px; border-color: #69737f; opacity: .35; transform: scale(1); }
@@ -79,6 +81,8 @@ button { font: inherit; }
   .flow-status { font-size: 8px; }
   .flow-detail { left: 18px; bottom: 65px; max-width: 210px; }
   .flow-node.center { --node-size: 118px; }
+  .flow-node.center.focus-center { --node-size: 104px; }
+  .flow-node.root-persistent { --node-size: 88px; }
   .flow-node.center .node-core { font-size: 12px; }
   .flow-world { transform-origin: 50% 48%; }
   .flow::before { width: 70vw; height: 70vw; }
