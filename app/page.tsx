@@ -6,7 +6,7 @@ import { ArrowLeft, Minus, Plus, RotateCcw, ExternalLink, LocateFixed } from 'lu
 type NodeId = string;
 type Level = 'home' | 'projects' | 'jobpilot' | 'ironakhada' | 'portfolio' | 'photography' | 'pylauncher' | 'experience' | 'skills' | 'philosophy' | 'contact' | 'about';
 type Point = { x: number; y: number };
-type Node = { id: NodeId; label: string; x: number; y: number; size?: number; description?: string };
+type Node = { id: NodeId; label: string; x: number; y: number; size?: number; description?: string; ancestorDepth?: number };
 type Graph = { center: Node; nodes: Node[] };
 type Detail = { eyebrow: string; title: string; body: string; tags: string[]; links?: { label: string; href: string }[] };
 
@@ -88,72 +88,34 @@ export default function Home() {
   const animation = useRef<number | null>(null);
   const graph = graphFor(level);
   const nestedMode = level !== 'home';
-
-  // Every drill-down keeps the complete ancestry on screen. Each older level gets
-  // progressively smaller and farther left, while the current level gets the focus.
   const ancestry = useMemo(() => {
     const chain: Level[] = [];
     let cursor: Level = level;
-    while (cursor !== 'home') {
-      chain.unshift(cursor);
-      cursor = parentOf[cursor] ?? 'home';
-    }
+    while (cursor !== 'home') { chain.unshift(cursor); cursor = parentOf[cursor] ?? 'home'; }
     return ['home', ...chain];
   }, [level]);
-
   const currentIndex = ancestry.length - 1;
   const ancestorNodes = ancestry.map((item, index) => {
     const node = nodeFor(item);
     const distance = currentIndex - index;
-    return {
-      ...node,
-      x: -340 + distance * 165,
-      y: 0,
-      size: distance === 0 ? node.size : Math.max(58, (node.size ?? 110) * Math.pow(0.72, distance)),
-      ancestorDepth: distance,
-    };
+    return { ...node, x: 90 - distance * 165, y: 0, size: distance === 0 ? node.size : Math.max(48, (node.size ?? 110) * Math.pow(0.72, distance)), ancestorDepth: distance };
   });
   const focusCenter = nestedMode ? ancestorNodes[currentIndex] : graph.center;
-  const displayNodes: Node[] = nestedMode
-    ? graph.nodes.map((node) => ({ ...node, x: focusCenter.x + node.x * 0.48, y: node.y * 0.48 }))
-    : graph.nodes;
-  const rootChain = nestedMode ? ancestorNodes : [];
-  const allNodes = useMemo(() => nestedMode ? [...rootChain, ...displayNodes] : [graph.center, ...displayNodes], [nestedMode, rootChain, displayNodes, graph]);
+  const displayNodes: Node[] = nestedMode ? graph.nodes.map((node) => ({ ...node, x: focusCenter.x + node.x * 0.48, y: node.y * 0.48 })) : graph.nodes;
+  const allNodes = useMemo(() => nestedMode ? [...ancestorNodes, ...displayNodes] : [graph.center, ...displayNodes], [nestedMode, ancestorNodes, displayNodes, graph]);
   const activeId = hovered ?? selected;
   const activeNode = allNodes.find((node) => node.id === activeId);
   const detail = details[level];
   const trace = level === 'home' ? ['NAYAN ASATI'] : ancestry.map((item) => levelLabels[item]);
 
-  const resetView = (nextLevel: Level = 'home') => {
-    setLevel(nextLevel);
-    setScale(nextLevel === 'home' ? 1 : Math.max(0.74, 1 - (ancestry.length - 1) * 0.06));
-    setPan({ x: 0, y: 0 });
-    setHovered(null);
-    setSelected(nextLevel === 'home' ? 'nayan' : nodeFor(nextLevel).id);
-    setFocusIndex(0);
-    velocity.current = { x: 0, y: 0 };
-  };
-  const zoom = (factor: number, origin?: Point) => setScale((current) => {
-    const next = Math.min(2.65, Math.max(0.58, current * factor));
-    if (origin) { const ratio = next / current; setPan((p) => ({ x: origin.x - (origin.x - p.x) * ratio, y: origin.y - (origin.y - p.y) * ratio })); }
-    return next;
-  });
+  const resetView = (nextLevel: Level = 'home') => { setLevel(nextLevel); setScale(nextLevel === 'home' ? 1 : Math.max(0.68, 1 - (ancestry.length - 1) * 0.06)); setPan({ x: 0, y: 0 }); setHovered(null); setSelected(nextLevel === 'home' ? 'nayan' : nodeFor(nextLevel).id); setFocusIndex(0); velocity.current = { x: 0, y: 0 }; };
+  const zoom = (factor: number, origin?: Point) => setScale((current) => { const next = Math.min(2.65, Math.max(0.58, current * factor)); if (origin) { const ratio = next / current; setPan((p) => ({ x: origin.x - (origin.x - p.x) * ratio, y: origin.y - (origin.y - p.y) * ratio })); } return next; });
   const selectNode = (node: Node) => {
     if (node.id === 'nayan') { resetView('home'); return; }
     setSelected(node.id);
     const nextLevel = childLinks[node.id];
-    if (nextLevel && level !== nextLevel) {
-      setHovered(null);
-      setOpening(true);
-      setLevel(nextLevel);
-      const nextDepth = nextLevel === 'home' ? 0 : ancestry.length;
-      setScale(Math.max(0.68, 1 - nextDepth * 0.055));
-      setPan({ x: 0, y: 0 });
-      window.setTimeout(() => setOpening(false), 480);
-      return;
-    }
-    const link = externalLinks[node.id];
-    if (link) window.open(link, '_blank', 'noopener,noreferrer');
+    if (nextLevel && level !== nextLevel) { setHovered(null); setOpening(true); setLevel(nextLevel); const nextDepth = nextLevel === 'home' ? 0 : ancestry.length; setScale(Math.max(0.68, 1 - nextDepth * 0.055)); setPan({ x: 0, y: 0 }); window.setTimeout(() => setOpening(false), 480); return; }
+    const link = externalLinks[node.id]; if (link) window.open(link, '_blank', 'noopener,noreferrer');
   };
   const focusNode = (index: number) => { const safe = ((index % allNodes.length) + allNodes.length) % allNodes.length; setFocusIndex(safe); setSelected(allNodes[safe].id); setHovered(allNodes[safe].id); };
   const onWheel = (event: React.WheelEvent<HTMLDivElement>) => { event.preventDefault(); const rect = stage.current?.getBoundingClientRect(); const origin = rect ? { x: event.clientX - (rect.left + rect.width / 2), y: event.clientY - (rect.top + rect.height / 2) } : undefined; zoom(event.deltaY < 0 ? 1.075 : 0.93, origin); };
@@ -173,9 +135,8 @@ export default function Home() {
         {(nestedMode ? displayNodes : graph.nodes).map((node) => <line key={node.id} className={activeId === node.id ? 'active' : ''} x1={focusCenter.x} y1={focusCenter.y} x2={node.x} y2={node.y} />)}
         {level === 'jobpilot' && <><line className={activeId === 'nextjs' || activeId === 'typescript' ? 'active' : ''} x1={displayNodes.find((n) => n.id === 'technology')?.x ?? 239} y1={displayNodes.find((n) => n.id === 'technology')?.y ?? -60} x2={displayNodes.find((n) => n.id === 'nextjs')?.x ?? 169} y2={displayNodes.find((n) => n.id === 'nextjs')?.y ?? 55} /><line className={activeId === 'ai' ? 'active' : ''} x1={displayNodes.find((n) => n.id === 'system')?.x ?? 90} y1={displayNodes.find((n) => n.id === 'system')?.y ?? -110} x2={displayNodes.find((n) => n.id === 'ai')?.x ?? 100} y2={displayNodes.find((n) => n.id === 'ai')?.y ?? 118} /></>}
       </svg>
-      {(nestedMode ? [...ancestorNodes, ...displayNodes] : [graph.center, ...displayNodes]).map((node, index) => <button key={`${node.id}-${index}`} data-node className={`flow-node ${node.id === focusCenter.id ? 'center focus-center' : ''} ${node.ancestorDepth ? `ancestor-depth-${node.ancestorDepth}` : ''} ${node.id === 'nayan' ? 'root-persistent' : ''} ${activeId === node.id ? 'active' : ''}`} style={{ left: `calc(50% + ${node.x}px)`, top: `calc(50% + ${node.y}px)`, ...(node.ancestorDepth ? { ['--ancestor-scale' as string]: Math.pow(0.72, node.ancestorDepth) } : {}) } as React.CSSProperties} onClick={() => selectNode(node)} onMouseEnter={() => { setHovered(node.id); setSelected(node.id); }} onMouseLeave={() => setHovered(null)} onFocus={() => setHovered(node.id)} onBlur={() => setHovered(null)} aria-label={node.id === 'nayan' ? 'Return home' : `Explore ${node.label}`}><span className="node-halo" /><span className="node-core">{node.label}</span>{node.description && <span className="node-description">{node.description}</span>}</button>)}
+      {(nestedMode ? [...ancestorNodes, ...displayNodes] : [graph.center, ...displayNodes]).map((node, index) => <button key={`${node.id}-${index}`} data-node className={`flow-node ${node.id === focusCenter.id ? 'center focus-center' : ''} ${node.ancestorDepth ? `ancestor-depth-${node.ancestorDepth}` : ''} ${node.id === 'nayan' ? 'root-persistent' : ''} ${activeId === node.id ? 'active' : ''}`} style={{ left: `calc(50% + ${node.x}px)`, top: `calc(50% + ${node.y}px)` } as React.CSSProperties} onClick={() => selectNode(node)} onMouseEnter={() => { setHovered(node.id); setSelected(node.id); }} onMouseLeave={() => setHovered(null)} onFocus={() => setHovered(node.id)} onBlur={() => setHovered(null)} aria-label={node.id === 'nayan' ? 'Return home' : `Explore ${node.label}`}><span className="node-halo" /><span className="node-core">{node.label}</span>{node.description && <span className="node-description">{node.description}</span>}</button>)}
     </div></section>
-
     <aside className="flow-detail phase4-detail" aria-live="polite"><span>{detail.eyebrow}</span><h1>{activeNode?.label ?? detail.title}</h1><p>{activeNode?.description ?? detail.body}</p><div className="detail-tags">{detail.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>{detail.links && <div className="detail-links">{detail.links.map((link) => <a key={link.href} href={link.href} target="_blank" rel="noreferrer">{link.label} <ExternalLink size={12} /></a>)}</div>}</aside>
     <aside className="flow-path" aria-label="Path status"><span>TRACE</span><strong>{activeNode?.label ?? levelLabels[level]}</strong><small>{level === 'home' ? 'ROOT NODE' : `DEPTH ${ancestry.length - 1} · ANCESTRY VISIBLE`}</small></aside>
     <aside className="flow-controls" aria-label="Network controls">{level !== 'home' && <button onClick={() => resetView('home')} aria-label="Back to home"><ArrowLeft size={14} /></button>}<button onClick={() => zoom(0.9)} aria-label="Zoom out"><Minus size={14} /></button><span>{Math.round(scale * 100)}%</span><button onClick={() => zoom(1.1)} aria-label="Zoom in"><Plus size={14} /></button><button onClick={() => resetView(level)} aria-label="Reset view"><RotateCcw size={14} /></button><button onClick={() => { setPan({ x: 0, y: 0 }); setScale(level === 'home' ? 1 : Math.max(0.68, 1 - (ancestry.length - 1) * 0.055)); }} aria-label="Center network"><LocateFixed size={14} /></button></aside>
