@@ -20,15 +20,17 @@ button { font: inherit; }
 .flow-world { position: absolute; inset: 0; transform-origin: center center; transition: transform .18s cubic-bezier(.22,1,.36,1); will-change: transform; }
 .flow-stage.is-dragging .flow-world { transition: none; }
 .flow-lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-.flow-lines line { stroke: #303a46; stroke-width: 1; opacity: .68; transition: stroke .35s, stroke-width .35s, opacity .35s, filter .35s; vector-effect: non-scaling-stroke; }
-.flow-lines line.active { stroke: #e7ebee; stroke-width: 2.2; opacity: 1; filter: drop-shadow(0 0 8px rgba(255,255,255,.22)); }
-.flow-node { --node-size: 54px; position: absolute; width: var(--node-size); height: var(--node-size); transform: translate(-50%, -50%); border: 0; padding: 0; background: transparent; color: #cdd3da; cursor: pointer; z-index: 5; transition: transform .35s cubic-bezier(.22,1,.36,1); }
-.flow-node:hover, .flow-node:focus-visible { z-index: 9; transform: translate(-50%, -50%) scale(1.08); outline: none; }
+.flow-lines line { stroke: #303a46; stroke-width: 1; opacity: .68; transition: stroke .35s, stroke-width .35s, opacity .35s, filter .35s; vector-effect: non-scaling-stroke; stroke-dasharray: 4 10; animation: flowLine 7s linear infinite; }
+.flow-lines line.active { stroke: #e7ebee; stroke-width: 2.2; opacity: 1; filter: drop-shadow(0 0 8px rgba(255,255,255,.22)); stroke-dasharray: 1 6; animation-duration: 2.2s; }
+.flow-node { --node-size: 54px; position: absolute; width: var(--node-size); height: var(--node-size); transform: translate(-50%, -50%); border: 0; padding: 0; background: transparent; color: #cdd3da; cursor: pointer; z-index: 5; transition: transform .35s cubic-bezier(.22,1,.36,1); animation: nodeFloat 5s ease-in-out infinite; }
+.flow-node:nth-of-type(2n) { animation-delay: -1.4s; }
+.flow-node:nth-of-type(3n) { animation-delay: -2.7s; }
+.flow-node:hover, .flow-node:focus-visible { z-index: 9; transform: translate(-50%, -50%) scale(1.08); outline: none; animation-play-state: paused; }
 .node-core { position: absolute; inset: 0; display: grid; place-items: center; padding: 8px; border: 1px solid #4d5866; border-radius: 50%; background: #0a0d12; font: 500 9px/1.15 'DM Mono', monospace; letter-spacing: .06em; text-align: center; transition: all .3s cubic-bezier(.22,1,.36,1); box-shadow: 0 0 0 0 rgba(255,255,255,0); }
 .node-halo { position: absolute; inset: -9px; border: 1px solid #687482; border-radius: 50%; opacity: 0; transform: scale(.78); transition: opacity .3s, transform .3s; }
 .flow-node:hover .node-core, .flow-node:focus-visible .node-core, .flow-node.active .node-core { border-color: #f3f4f5; color: #fff; box-shadow: 0 0 30px rgba(255,255,255,.1); }
 .flow-node:hover .node-halo, .flow-node:focus-visible .node-halo, .flow-node.active .node-halo { opacity: .65; transform: scale(1); animation: pulse 1.8s ease-out infinite; }
-.flow-node.center { --node-size: 150px; z-index: 8; }
+.flow-node.center { --node-size: 150px; z-index: 8; animation: none; }
 .flow-node.center .node-core { background: #f3f4f2; border-color: #fff; color: #06080a; font-family: Inter, sans-serif; font-size: 14px; font-weight: 700; letter-spacing: -.02em; box-shadow: 0 0 55px rgba(255,255,255,.07); }
 .flow-node.center .node-halo { inset: -15px; border-color: #69737f; opacity: .35; transform: scale(1); }
 .node-description { position: absolute; top: calc(100% + 15px); left: 50%; width: 180px; transform: translateX(-50%) translateY(-3px); opacity: 0; pointer-events: none; color: #75808c; font: 400 9px/1.4 'DM Mono', monospace; letter-spacing: .04em; transition: opacity .25s, transform .25s; }
@@ -45,8 +47,13 @@ button { font: inherit; }
 .flow-footer strong { color: #d1d5da; font: 600 12px/1 Inter, sans-serif; letter-spacing: .03em; }
 .flow-status { position: absolute; left: 50%; transform: translateX(-50%); }
 .flow-footer-right { font-size: 9px; }
+.flow-back { position: absolute; left: 30px; top: 50%; transform: translateY(-50%); z-index: 21; display: inline-flex; align-items: center; gap: 7px; border: 1px solid #27303a; border-radius: 999px; padding: 8px 12px; background: rgba(7,9,13,.72); color: #8b95a0; font: 500 9px/1 'DM Mono', monospace; letter-spacing: .1em; cursor: pointer; backdrop-filter: blur(14px); }
+.flow-back:hover, .flow-back:focus-visible { color: #fff; border-color: #56616d; outline: none; }
 @keyframes pulse { 0% { opacity: .55; transform: scale(.85); } 100% { opacity: 0; transform: scale(1.35); } }
+@keyframes flowLine { to { stroke-dashoffset: -56; } }
+@keyframes nodeFloat { 0%,100% { margin-top: 0; } 50% { margin-top: -5px; } }
 
+@media (prefers-reduced-motion: reduce) { .flow-lines line, .flow-node, .node-halo { animation: none !important; transition: none !important; } }
 @media (max-width: 720px) {
   .flow-header { height: 62px; padding: 0 18px; }
   .flow-header-meta span:first-child { display: none; }
@@ -54,6 +61,7 @@ button { font: inherit; }
   .flow-instructions { top: 78px; font-size: 8px; max-width: calc(100vw - 28px); text-align: center; }
   .flow-instructions i { margin: 0 5px; }
   .flow-controls { right: 14px; }
+  .flow-back { left: 14px; }
   .flow-footer { padding: 16px 18px; }
   .flow-footer-right { display: none; }
   .flow-status { font-size: 8px; }
