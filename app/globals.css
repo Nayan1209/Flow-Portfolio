@@ -7,6 +7,7 @@ button { font: inherit; }
 
 .flow { min-height: 100svh; height: 100svh; overflow: hidden; position: relative; background: radial-gradient(circle at 50% 48%, #10151c 0%, #080a0e 44%, #040506 100%); color: #f5f5f2; touch-action: none; user-select: none; }
 .flow::before { content: ''; position: absolute; width: 38vw; height: 38vw; min-width: 280px; min-height: 280px; left: 50%; top: 50%; transform: translate(-50%, -50%); border: 1px solid rgba(148,163,184,.06); border-radius: 50%; box-shadow: 0 0 90px rgba(255,255,255,.025) inset; pointer-events: none; z-index: 0; animation: phase2Orbit 18s linear infinite; }
+.flow::after { content: ''; position: absolute; inset: -20%; pointer-events: none; z-index: 0; opacity: .14; background-image: radial-gradient(circle, rgba(255,255,255,.45) 0 1px, transparent 1.5px), radial-gradient(circle, rgba(148,163,184,.28) 0 1px, transparent 1.5px); background-size: 180px 180px, 260px 260px; background-position: 10% 20%, 70% 65%; animation: particleDrift 24s linear infinite; }
 .flow-grid { position: absolute; inset: 0; opacity: .18; background-image: linear-gradient(rgba(255,255,255,.028) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.028) 1px, transparent 1px); background-size: 56px 56px; mask-image: radial-gradient(circle at center, black 0%, transparent 78%); pointer-events: none; }
 .flow-vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at center, transparent 35%, rgba(0,0,0,.32) 100%); }
 .flow-header { position: absolute; inset: 0 0 auto; height: 78px; display: flex; justify-content: space-between; align-items: center; padding: 0 30px; z-index: 20; }
@@ -23,19 +24,22 @@ button { font: inherit; }
 .flow-stage.is-dragging .flow-world { transition: none; }
 .flow-lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .flow-lines line { stroke: #303a46; stroke-width: 1; opacity: .68; transition: stroke .35s, stroke-width .35s, opacity .35s, filter .35s; vector-effect: non-scaling-stroke; stroke-dasharray: 4 10; animation: flowLine 7s linear infinite; stroke-linecap: round; }
+.flow-lines line:nth-child(2n) { animation-duration: 9s; animation-delay: -2s; }
+.flow-lines line:nth-child(3n) { animation-duration: 11s; animation-delay: -4s; }
 .flow-lines line.active { stroke: #e7ebee; stroke-width: 2.2; opacity: 1; filter: drop-shadow(0 0 8px rgba(255,255,255,.22)); stroke-dasharray: 1 6; animation-duration: 2.2s; }
 .flow-node { --node-size: 54px; position: absolute; width: var(--node-size); height: var(--node-size); transform: translate(-50%, -50%); border: 0; padding: 0; background: transparent; color: #cdd3da; cursor: pointer; z-index: 5; transition: transform .35s cubic-bezier(.22,1,.36,1); animation: nodeFloat 5s ease-in-out infinite; }
 .flow-node:nth-of-type(2n) { animation-delay: -1.4s; }
 .flow-node:nth-of-type(3n) { animation-delay: -2.7s; }
 .flow-node:hover, .flow-node:focus-visible { z-index: 9; transform: translate(-50%, -50%) scale(1.08); outline: none; animation-play-state: paused; }
+.flow-node:focus-visible .node-core { outline: 1px solid #f5f5f2; outline-offset: 5px; }
 .node-core { position: absolute; inset: 0; display: grid; place-items: center; padding: 8px; overflow: hidden; border: 1px solid #4d5866; border-radius: 50%; background: #0a0d12; font: 500 9px/1.15 'DM Mono', monospace; letter-spacing: .06em; text-align: center; transition: all .3s cubic-bezier(.22,1,.36,1); box-shadow: 0 0 0 0 rgba(255,255,255,0); }
 .node-core::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(115deg, transparent 25%, rgba(255,255,255,.12) 48%, transparent 70%); transform: translateX(-130%); transition: transform .7s ease; pointer-events: none; }
 .flow-node:hover .node-core::after, .flow-node:focus-visible .node-core::after { transform: translateX(130%); }
 .node-halo { position: absolute; inset: -9px; border: 1px solid #687482; border-radius: 50%; opacity: 0; transform: scale(.78); transition: opacity .3s, transform .3s; }
-.flow-node:hover .node-core, .flow-node:focus-visible .node-core, .flow-node.active .node-core { border-color: #f3f4f5; color: #fff; box-shadow: 0 0 30px rgba(255,255,255,.1); }
+.flow-node:hover .node-core, .flow-node:focus-visible .node-core, .flow-node.active .node-core { border-color: #f3f4f5; color: #fff; box-shadow: 0 0 30px rgba(255,255,255,.1), inset 0 0 18px rgba(255,255,255,.035); }
 .flow-node.active .node-core { box-shadow: 0 0 35px rgba(255,255,255,.13), inset 0 0 18px rgba(255,255,255,.035); }
 .flow-node:hover .node-halo, .flow-node:focus-visible .node-halo, .flow-node.active .node-halo { opacity: .65; transform: scale(1); animation: pulse 1.8s ease-out infinite; }
-.flow-node.center { --node-size: 150px; z-index: 8; animation: none; }
+.flow-node.center { --node-size: 150px; z-index: 8; animation: centerBreathe 6s ease-in-out infinite; }
 .flow-node.center .node-core { background: #f3f4f2; border-color: #fff; color: #06080a; font-family: Inter, sans-serif; font-size: 14px; font-weight: 700; letter-spacing: -.02em; box-shadow: 0 0 55px rgba(255,255,255,.07); }
 .flow-node.center .node-core::after { background: linear-gradient(115deg, transparent 20%, rgba(0,0,0,.08) 50%, transparent 80%); }
 .flow-node.center .node-halo { inset: -15px; border-color: #69737f; opacity: .35; transform: scale(1); }
@@ -58,8 +62,10 @@ button { font: inherit; }
 @keyframes pulse { 0% { opacity: .55; transform: scale(.85); } 100% { opacity: 0; transform: scale(1.35); } }
 @keyframes flowLine { to { stroke-dashoffset: -56; } }
 @keyframes nodeFloat { 0%,100% { margin-top: 0; } 50% { margin-top: -5px; } }
+@keyframes centerBreathe { 0%,100% { filter: drop-shadow(0 0 0 rgba(255,255,255,0)); } 50% { filter: drop-shadow(0 0 22px rgba(255,255,255,.06)); } }
 @keyframes phase2Orbit { from { transform: translate(-50%,-50%) rotate(0deg); } to { transform: translate(-50%,-50%) rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) { .flow::before, .flow-lines line, .flow-node, .node-halo { animation: none !important; transition: none !important; } .node-core::after { display: none; } }
+@keyframes particleDrift { from { transform: translate3d(0,0,0); } to { transform: translate3d(3%,-2%,0); } }
+@media (prefers-reduced-motion: reduce) { .flow::before, .flow::after, .flow-lines line, .flow-node, .node-halo { animation: none !important; transition: none !important; } .node-core::after { display: none; } }
 @media (max-width: 720px) {
   .flow-header { height: 62px; padding: 0 18px; }
   .flow-header-meta span:first-child { display: none; }
