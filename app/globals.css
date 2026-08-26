@@ -27,7 +27,7 @@ button { font: inherit; }
 .flow-lines line:nth-child(2n) { animation-duration: 9s; animation-delay: -2s; }
 .flow-lines line:nth-child(3n) { animation-duration: 11s; animation-delay: -4s; }
 .flow-lines line.active { stroke: #e7ebee; stroke-width: 2.2; opacity: 1; filter: drop-shadow(0 0 8px rgba(255,255,255,.22)); stroke-dasharray: 1 6; animation-duration: 2.2s; }
-.flow-node { --node-size: 54px; position: absolute; width: var(--node-size); height: var(--node-size); transform: translate(-50%, -50%); border: 0; padding: 0; background: transparent; color: #cdd3da; cursor: pointer; z-index: 5; transition: transform .35s cubic-bezier(.22,1,.36,1); animation: nodeFloat 5s ease-in-out infinite; }
+.flow-node { --node-size: 54px; position: absolute; width: var(--node-size); height: var(--node-size); transform: translate(-50%, -50%); border: 0; padding: 0; background: transparent; color: #cdd3da; cursor: pointer; z-index: 5; transition: transform .35s cubic-bezier(.22,1,.36,1), width .35s, height .35s; animation: nodeFloat 5s ease-in-out infinite; }
 .flow-node:nth-of-type(2n) { animation-delay: -1.4s; }
 .flow-node:nth-of-type(3n) { animation-delay: -2.7s; }
 .flow-node:hover, .flow-node:focus-visible { z-index: 9; transform: translate(-50%, -50%) scale(1.08); outline: none; animation-play-state: paused; }
@@ -42,9 +42,15 @@ button { font: inherit; }
 .flow-node.center { --node-size: 150px; z-index: 8; animation: centerBreathe 6s ease-in-out infinite; }
 .flow-node.center.focus-center { --node-size: 132px; z-index: 10; }
 .flow-node.root-persistent { --node-size: 110px; z-index: 9; }
+.flow-node.ancestor-depth-1 { --node-size: 82px; z-index: 7; }
+.flow-node.ancestor-depth-2 { --node-size: 62px; z-index: 6; }
+.flow-node.ancestor-depth-3 { --node-size: 48px; z-index: 5; }
 .flow-node.center .node-core { background: #f3f4f2; border-color: #fff; color: #06080a; font-family: Inter, sans-serif; font-size: 14px; font-weight: 700; letter-spacing: -.02em; box-shadow: 0 0 55px rgba(255,255,255,.07); }
 .flow-node.center .node-core::after { background: linear-gradient(115deg, transparent 20%, rgba(0,0,0,.08) 50%, transparent 80%); }
 .flow-node.center .node-halo { inset: -15px; border-color: #69737f; opacity: .35; transform: scale(1); }
+.flow-node.ancestor-depth-1 .node-core { font-size: 8px; color: #aeb7c0; border-color: #46515c; }
+.flow-node.ancestor-depth-2 .node-core { font-size: 7px; color: #7f8994; border-color: #38424d; }
+.flow-node.ancestor-depth-3 .node-core { font-size: 6px; color: #626c77; border-color: #303943; }
 .node-description { position: absolute; top: calc(100% + 15px); left: 50%; width: 180px; transform: translateX(-50%) translateY(-3px); opacity: 0; pointer-events: none; color: #75808c; font: 400 9px/1.4 'DM Mono', monospace; letter-spacing: .04em; transition: opacity .25s, transform .25s; }
 .flow-node:hover .node-description, .flow-node:focus-visible .node-description { opacity: 1; transform: translateX(-50%) translateY(0); }
 .flow-detail { position: absolute; left: 30px; bottom: 84px; z-index: 20; display: flex; flex-direction: column; gap: 8px; color: #59636f; }
@@ -83,6 +89,9 @@ button { font: inherit; }
   .flow-node.center { --node-size: 118px; }
   .flow-node.center.focus-center { --node-size: 104px; }
   .flow-node.root-persistent { --node-size: 88px; }
+  .flow-node.ancestor-depth-1 { --node-size: 66px; }
+  .flow-node.ancestor-depth-2 { --node-size: 52px; }
+  .flow-node.ancestor-depth-3 { --node-size: 42px; }
   .flow-node.center .node-core { font-size: 12px; }
   .flow-world { transform-origin: 50% 48%; }
   .flow::before { width: 70vw; height: 70vw; }
