@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap');
+
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body { background: #050608; color: #f4f5f6; font-family: Inter, system-ui, sans-serif; }
+button { font: inherit; }
+
+.flow { min-height: 100svh; height: 100svh; overflow: hidden; position: relative; background: radial-gradient(circle at 50% 48%, #10151c 0%, #080a0e 44%, #040506 100%); color: #f5f5f2; touch-action: none; user-select: none; }
+.flow-grid { position: absolute; inset: 0; opacity: .18; background-image: linear-gradient(rgba(255,255,255,.028) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.028) 1px, transparent 1px); background-size: 56px 56px; mask-image: radial-gradient(circle at center, black 0%, transparent 78%); pointer-events: none; }
+.flow-header { position: absolute; inset: 0 0 auto; height: 78px; display: flex; justify-content: space-between; align-items: center; padding: 0 30px; z-index: 20; }
+.flow-wordmark { border: 0; background: none; color: #f7f7f4; cursor: pointer; font-weight: 700; font-size: 20px; letter-spacing: -.055em; }
+.flow-wordmark span { color: #707984; }
+.flow-header-meta, .flow-instructions, .flow-footer, .flow-controls { font: 500 10px/1 'DM Mono', monospace; letter-spacing: .1em; }
+.flow-header-meta { display: flex; gap: 30px; color: #69737f; }
+.flow-instructions { position: absolute; top: 94px; left: 50%; transform: translateX(-50%); z-index: 10; color: #626d7a; white-space: nowrap; }
+.flow-instructions i { display: inline-block; width: 3px; height: 3px; margin: 0 11px; border-radius: 50%; background: #69737f; vertical-align: middle; }
+.flow-stage { position: absolute; inset: 0; cursor: grab; overflow: hidden; }
+.flow-stage.is-dragging { cursor: grabbing; }
+.flow-world { position: absolute; inset: 0; transform-origin: center center; transition: transform .18s cubic-bezier(.22,1,.36,1); }
+.flow-lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.flow-lines line { stroke: #303a46; stroke-width: 1; opacity: .68; transition: stroke .35s, stroke-width .35s, opacity .35s; vector-effect: non-scaling-stroke; }
+.flow-lines line.active { stroke: #dfe4e9; stroke-width: 2.2; opacity: 1; filter: drop-shadow(0 0 7px rgba(255,255,255,.2)); }
+.flow-node { --node-size: 48px; position: absolute; width: var(--node-size); height: var(--node-size); transform: translate(-50%, -50%); border: 0; padding: 0; background: transparent; color: #cdd3da; cursor: pointer; z-index: 5; }
+.node-core { position: absolute; inset: 0; display: grid; place-items: center; padding: 8px; border: 1px solid #4d5866; border-radius: 50%; background: #0a0d12; font: 500 9px/1.15 'DM Mono', monospace; letter-spacing: .06em; text-align: center; transition: all .3s cubic-bezier(.22,1,.36,1); box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+.node-ring { position: absolute; inset: -8px; border: 1px solid #5d6876; border-radius: 50%; opacity: 0; transform: scale(.8); transition: .3s; }
+.flow-node:hover .node-core, .flow-node:focus-visible .node-core, .flow-node.active .node-core { border-color: #f3f4f5; color: #fff; box-shadow: 0 0 26px rgba(255,255,255,.08); }
+.flow-node:hover .node-ring, .flow-node:focus-visible .node-ring, .flow-node.active .node-ring { opacity: .6; transform: scale(1); animation: pulse 1.8s ease-out infinite; }
+.flow-node.center { --node-size: 148px; z-index: 8; }
+.flow-node.center .node-core { background: #f3f4f2; border-color: #fff; color: #06080a; font-family: Inter, sans-serif; font-size: 14px; font-weight: 700; letter-spacing: -.02em; box-shadow: 0 0 55px rgba(255,255,255,.06); }
+.flow-node.center .node-ring { inset: -14px; border-color: #69737f; opacity: .35; transform: scale(1); }
+.flow-controls { position: absolute; right: 28px; top: 50%; transform: translateY(-50%); z-index: 20; display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 7px; border: 1px solid #27303a; border-radius: 24px; background: rgba(7,9,13,.72); backdrop-filter: blur(14px); color: #7e8894; }
+.flow-controls button { width: 30px; height: 30px; border: 0; border-radius: 50%; background: transparent; color: inherit; display: grid; place-items: center; cursor: pointer; }
+.flow-controls button:hover { color: #fff; background: #171c22; }
+.flow-controls span { min-width: 34px; text-align: center; }
+.flow-footer { position: absolute; inset: auto 0 0; padding: 24px 30px; z-index: 20; display: flex; align-items: end; justify-content: space-between; color: #68727e; }
+.flow-footer > div:first-child { display: flex; flex-direction: column; gap: 8px; }
+.flow-footer small { font-size: 9px; }
+.flow-footer strong { color: #d1d5da; font: 600 12px/1 Inter, sans-serif; letter-spacing: .03em; }
+.flow-status { position: absolute; left: 50%; transform: translateX(-50%); }
+.flow-footer-right { font-size: 9px; }
+@keyframes pulse { 0% { opacity: .55; transform: scale(.85); } 100% { opacity: 0; transform: scale(1.35); } }
+
+@media (max-width: 720px) {
+  .flow-header { height: 62px; padding: 0 18px; }
+  .flow-header-meta span:first-child { display: none; }
+  .flow-header-meta { font-size: 9px; }
+  .flow-instructions { top: 78px; font-size: 8px; }
+  .flow-instructions i { margin: 0 7px; }
+  .flow-controls { right: 14px; }
+  .flow-footer { padding: 16px 18px; }
+  .flow-footer-right { display: none; }
+  .flow-status { font-size: 8px; }
+  .flow-node.center { --node-size: 118px; }
+  .flow-node.center .node-core { font-size: 12px; }
+  .flow-world { transform-origin: 50% 48%; }
+}
