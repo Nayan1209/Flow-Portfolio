@@ -1,8 +1,8 @@
-name: Phase One Build
+name: Flow Portfolio Build
 
 on:
   push:
-    branches: [phase-1]
+    branches: [phase-2]
   pull_request:
     branches: [main]
 
@@ -15,8 +15,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
+          node-version: 24
       - name: Install dependencies
         run: npm install
       - name: Build
