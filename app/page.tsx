@@ -77,6 +77,7 @@ export default function Home() {
   const [hovered, setHovered] = useState<NodeId | null>(null);
   const [selected, setSelected] = useState<NodeId>('nayan');
   const [dragging, setDragging] = useState(false);
+  const [opening, setOpening] = useState(false);
   const [focusIndex, setFocusIndex] = useState(0);
   const stage = useRef<HTMLDivElement>(null);
   const dragStart = useRef<Point>({ x: 0, y: 0 });
@@ -91,7 +92,7 @@ export default function Home() {
   const trace = level === 'home' ? ['NAYAN ASATI'] : ['NAYAN ASATI', levelLabels[level]];
 
   const resetView = (nextLevel: Level = 'home') => {
-    setLevel(nextLevel); setScale(nextLevel === 'home' ? 1 : 1.04); setPan({ x: 0, y: 0 }); setHovered(null); setSelected(nextLevel === 'home' ? 'nayan' : graphFor(nextLevel).center.id); setFocusIndex(0); velocity.current = { x: 0, y: 0 };
+    setOpening(false); setLevel(nextLevel); setScale(nextLevel === 'home' ? 1 : 1.04); setPan({ x: 0, y: 0 }); setHovered(null); setSelected(nextLevel === 'home' ? 'nayan' : graphFor(nextLevel).center.id); setFocusIndex(0); velocity.current = { x: 0, y: 0 };
   };
   const zoom = (factor: number, origin?: Point) => setScale((current) => {
     const next = Math.min(2.65, Math.max(0.58, current * factor));
@@ -101,7 +102,14 @@ export default function Home() {
   const selectNode = (node: Node) => {
     setSelected(node.id);
     const nextLevel = childLinks[node.id];
-    if (nextLevel) { resetView(nextLevel); return; }
+    if (nextLevel && level !== nextLevel) {
+      setHovered(null); setOpening(true);
+      const targetScale = 2.25;
+      setScale(targetScale);
+      setPan({ x: -node.x * targetScale, y: -node.y * targetScale });
+      window.setTimeout(() => { setLevel(nextLevel); setScale(nextLevel === 'home' ? 1 : 1.04); setPan({ x: 0, y: 0 }); setSelected(nextLevel === 'home' ? 'nayan' : graphFor(nextLevel).center.id); setOpening(false); }, 650);
+      return;
+    }
     const link = externalLinks[node.id];
     if (link) window.open(link, '_blank', 'noopener,noreferrer');
   };
@@ -117,8 +125,8 @@ export default function Home() {
     <div className="flow-grid" /><div className="flow-vignette" />
     <header className="flow-header"><button className="flow-wordmark" onClick={() => resetView('home')} aria-label="Return home">FLOW<span>.</span></button><div className="flow-header-meta"><span>PORTFOLIO / 04</span><span>FLOW NETWORK</span></div></header>
     <div className="flow-trace" aria-label="Current navigation path">{trace.map((item, index) => <span key={item} className={index === trace.length - 1 ? 'current' : ''}>{item}{index < trace.length - 1 && <b>→</b>}</span>)}</div>
-    <div className="flow-instructions">DRAG TO MOVE <i /> SCROLL TO ZOOM <i /> HOVER TO TRACE <i /> CLICK TO EXPLORE <i /> ARROWS TO NAVIGATE</div>
-    <section className={`flow-stage ${dragging ? 'is-dragging' : ''}`} aria-label="Nayan Asati interactive portfolio network"><div className="flow-world" style={{ transform: `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${scale})` }}>
+    <div className="flow-instructions">SCROLL TO ZOOM <i /> HOVER TO TRACE <i /> CLICK TO EXPLORE <i /> ARROWS TO NAVIGATE</div>
+    <section className={`flow-stage ${dragging ? 'is-dragging' : ''} ${opening ? 'is-opening' : ''}`} aria-label="Nayan Asati interactive portfolio network"><div className="flow-world" style={{ transform: `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${scale})` }}>
       <svg className="flow-lines" viewBox="-520 -410 1040 820" aria-hidden="true">
         {graph.nodes.map((node) => <line key={node.id} className={activeId === node.id ? 'active' : ''} x1={graph.center.x} y1={graph.center.y} x2={node.x} y2={node.y} />)}
         {level === 'jobpilot' && <><line className={activeId === 'nextjs' || activeId === 'typescript' ? 'active' : ''} x1="310" y1="-125" x2="165" y2="115" /><line className={activeId === 'ai' ? 'active' : ''} x1="0" y1="-230" x2="20" y2="245" /></>}
