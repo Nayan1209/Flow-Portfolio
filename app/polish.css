@@ -56,3 +56,7 @@
 .flow-footer{color:rgba(226,240,204,.50)}.flow-status{color:rgba(226,240,204,.66)}
 .flow-world{transition:transform .32s cubic-bezier(.16,1,.3,1)}.flow-stage.is-opening .flow-world{transition:transform .65s cubic-bezier(.16,1,.3,1)}
 @media(max-width:720px){.flow-stage.is-opening .flow-world{transition-duration:.65s}}
+
+/* Global node separation: keep the persistent Nayan root clear of every focused category. */
+.flow-node.root-persistent{translate:-88px 0}
+@media(max-width:720px){.flow-node.root-persistent{translate:-56px 0}}
