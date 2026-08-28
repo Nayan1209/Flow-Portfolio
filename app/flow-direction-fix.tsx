@@ -25,6 +25,7 @@ const fitNode = (node: HTMLElement) => {
 export default function FlowDirectionFix() {
   useEffect(() => {
     let frame = 0;
+    let lastWheelOpen = 0;
 
     const applyDirection = () => {
       const stage = document.querySelector<HTMLElement>('.flow-stage');
@@ -113,6 +114,23 @@ export default function FlowDirectionFix() {
     const root = document.querySelector('.flow');
     if (!root) return () => cancelAnimationFrame(frame);
 
+    // Zooming directly over a node is also a navigation gesture. A deliberate
+    // wheel-up over a node opens that node, while the normal page wheel handler
+    // continues to provide the small camera zoom underneath it. A short
+    // cooldown prevents trackpad bursts from skipping multiple hierarchy levels.
+    const openNodeOnWheel = (event: WheelEvent) => {
+      if (event.deltaY >= 0) return;
+      const target = event.target as Element | null;
+      const node = target?.closest<HTMLElement>('[data-node]');
+      if (!node) return;
+      const now = performance.now();
+      if (now - lastWheelOpen < 450) return;
+      lastWheelOpen = now;
+      node.click();
+    };
+
+    window.addEventListener('wheel', openNodeOnWheel, { capture: true, passive: true });
+
     const observer = new MutationObserver(schedule);
     observer.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class'] });
     window.addEventListener('resize', schedule);
@@ -120,6 +138,7 @@ export default function FlowDirectionFix() {
     return () => {
       observer.disconnect();
       window.removeEventListener('resize', schedule);
+      window.removeEventListener('wheel', openNodeOnWheel, true);
       cancelAnimationFrame(frame);
     };
   }, []);
