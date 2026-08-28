@@ -7,6 +7,21 @@ const parseWorldX = (node: HTMLElement) => {
   return match ? Number(match[1]) : 0;
 };
 
+const fitNode = (node: HTMLElement) => {
+  const core = node.querySelector<HTMLElement>('.node-core');
+  if (!core) return;
+  const text = (core.textContent ?? '').trim();
+  const isCenter = node.classList.contains('focus-center');
+  const isRoot = node.classList.contains('root-persistent');
+  const isPrimary = node.classList.contains('home-primary');
+  const compact = text.length <= 8 ? 82 : text.length <= 12 ? 92 : text.length <= 16 ? 106 : 122;
+  const size = isCenter ? Math.max(170, compact + 40) : isRoot ? Math.max(86, compact - 4) : isPrimary ? Math.max(100, compact) : compact;
+  node.style.setProperty('--node-size', `${size}px`);
+  core.style.fontSize = isCenter ? '14px' : text.length > 15 ? '8px' : '9px';
+  core.style.lineHeight = '1.18';
+  core.style.padding = isCenter ? '14px' : '10px';
+};
+
 export default function FlowDirectionFix() {
   useEffect(() => {
     let frame = 0;
@@ -17,6 +32,9 @@ export default function FlowDirectionFix() {
       const lines = stage?.querySelector<SVGSVGElement>('.flow-lines');
       if (!stage || !world || !lines) return;
 
+      const nodes = Array.from(stage.querySelectorAll<HTMLElement>('.flow-node'));
+      nodes.forEach(fitNode);
+
       const ancestors = Array.from(
         stage.querySelectorAll<HTMLElement>('.flow-node.ancestor-depth-1, .flow-node.ancestor-depth-2, .flow-node.ancestor-depth-3, .flow-node.focus-center'),
       );
@@ -24,19 +42,19 @@ export default function FlowDirectionFix() {
       const focus = stage.querySelector<HTMLElement>('.flow-node.focus-center');
       if (!root || !focus) return;
 
-      // The focused node always sits to the right of its ancestry.
-      focus.style.left = 'calc(50% + 120px)';
+      // Keep the focused node on the right, but use a shorter 180px hierarchy step.
+      const step = 180;
+      const focusX = 90;
+      focus.style.left = `calc(50% + ${focusX}px)`;
 
-      // Ancestor depth 1 is the immediate parent, depth 2 is its parent, etc.
       ancestors.forEach((node) => {
         if (node === focus) return;
         const match = node.className.toString().match(/ancestor-depth-(\d+)/);
         if (!match) return;
         const distance = Number(match[1]);
-        node.style.left = `calc(50% + ${120 - distance * 240}px)`;
+        node.style.left = `calc(50% + ${focusX - distance * step}px)`;
       });
 
-      // The root is the far-left endpoint of the ancestry chain.
       const rootDistance = Math.max(
         1,
         ancestors.reduce((max, node) => {
@@ -44,10 +62,9 @@ export default function FlowDirectionFix() {
           return match ? Math.max(max, Number(match[1])) : max;
         }, 1),
       );
-      root.style.left = `calc(50% + ${120 - rootDistance * 240}px)`;
+      root.style.left = `calc(50% + ${focusX - rootDistance * step}px)`;
 
-      // The original nested SVG puts the ancestry lines first. Hide those
-      // reversed segments and replace them with correctly directed segments.
+      // The original nested SVG can contain reversed ancestry segments. Hide only those.
       const ancestorLineCount = Math.max(0, ancestors.filter((node) => node !== focus).length);
       Array.from(lines.querySelectorAll('line')).forEach((line, index) => {
         if (index < ancestorLineCount) line.style.display = 'none';
