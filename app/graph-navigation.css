@@ -1,0 +1,11 @@
+.flow-stage.is-opening .flow-world{animation:graphTravel .42s cubic-bezier(.22,1,.36,1)}
+.flow-node.root-node{--node-size:180px;z-index:12}
+.flow-node.root-node .node-core{background:#f3f4f2;border-color:#fff;color:#06080a;font-family:Inter,sans-serif;font-size:14px;font-weight:700;letter-spacing:-.02em;box-shadow:0 0 55px rgba(255,255,255,.08)}
+.flow-node.focus-center{--node-size:148px;z-index:11}
+.flow-node.focus-center .node-core{background:#f3f4f2;border-color:#fff;color:#06080a;font-family:Inter,sans-serif;font-size:13px;font-weight:700;letter-spacing:-.02em;box-shadow:0 0 48px rgba(255,255,255,.08)}
+.flow-node.ancestor-node .node-core{opacity:.82}
+.flow-node .node-core{white-space:normal;overflow:visible;min-width:var(--node-size);min-height:var(--node-size);padding:10px;word-break:normal;text-wrap:balance}
+.flow-node .node-description{z-index:4}
+.flow-lines line{stroke-linecap:round}
+@keyframes graphTravel{0%{filter:blur(0);opacity:.72}100%{filter:blur(0);opacity:1}}
+@media(max-width:720px){.flow-node.root-node{--node-size:92px}.flow-node.focus-center{--node-size:108px}.flow-node.root-node .node-core,.flow-node.focus-center .node-core{font-size:11px}.flow-node .node-core{padding:8px}}
