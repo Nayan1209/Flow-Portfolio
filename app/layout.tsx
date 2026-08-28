@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import './polish.css';
+import './graph-navigation.css';
 import FlowDirectionFix from './flow-direction-fix';
 
 export const metadata: Metadata = {
