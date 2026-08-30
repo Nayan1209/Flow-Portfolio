@@ -1,0 +1,46 @@
+/* Parent-aware home topology.
+   The graph still owns the semantic nodes; this layer only refines their first-view placement.
+   Project satellites stay in the PROJECTS neighborhood, while Experience exposes companies first. */
+
+.flow:has([data-node="projects"].primary) [data-node="projects"] {
+  top: calc(50% - min(27vh, 255px)) !important;
+}
+
+/* Six project satellites form a compact halo around PROJECTS instead of orbiting the whole home graph. */
+.flow:has([data-node="projects"].primary) [data-node="jobpilot"] { left: calc(50% - 100px) !important; top: calc(50% - min(27vh, 255px) - 92px) !important; }
+.flow:has([data-node="projects"].primary) [data-node="ironakhada"] { left: calc(50% - 132px) !important; top: calc(50% - min(27vh, 255px) - 4px) !important; }
+.flow:has([data-node="projects"].primary) [data-node="portfolio"] { left: calc(50% - 72px) !important; top: calc(50% - min(27vh, 255px) + 88px) !important; }
+.flow:has([data-node="projects"].primary) [data-node="photography"] { left: calc(50% + 72px) !important; top: calc(50% - min(27vh, 255px) + 88px) !important; }
+.flow:has([data-node="projects"].primary) [data-node="pylauncher"] { left: calc(50% + 132px) !important; top: calc(50% - min(27vh, 255px) - 4px) !important; }
+.flow:has([data-node="projects"].primary) [data-node="smartgrid"] { left: calc(50% + 100px) !important; top: calc(50% - min(27vh, 255px) - 92px) !important; }
+
+/* Experience reveals the employers first. The role is intentionally discovered after opening the company node. */
+.flow [data-node="analyser"],
+.flow [data-node="ashok"] { font-size: 0; }
+.flow [data-node="analyser"] .node-core > span::after { content: 'ANALYSER INSTRUMENT'; font: 500 8.5px/1.2 var(--mono); letter-spacing: .055em; }
+.flow [data-node="ashok"] .node-core > span::after { content: 'ASHOK LEYLAND'; font: 500 8.5px/1.2 var(--mono); letter-spacing: .055em; }
+
+.flow:has([data-node="experience"].primary) [data-node="analyser"] { left: calc(50% + min(27vw, 220px) - 82px) !important; top: calc(50% - min(13.5vh, 125px) - 42px) !important; }
+.flow:has([data-node="experience"].primary) [data-node="ashok"] { left: calc(50% + min(27vw, 220px) + 82px) !important; top: calc(50% - min(13.5vh, 125px) + 42px) !important; }
+
+/* On the root screen these company satellites sit in a small employer cluster around EXPERIENCE. */
+.flow:has([data-node="projects"].primary) [data-node="analyser"] { left: calc(50% + min(27vw, 220px) - 82px) !important; top: calc(50% - min(13.5vh, 125px) - 42px) !important; }
+.flow:has([data-node="projects"].primary) [data-node="ashok"] { left: calc(50% + min(27vw, 220px) + 82px) !important; top: calc(50% - min(13.5vh, 125px) + 42px) !important; }
+
+@media (max-width: 720px) {
+  .flow:has([data-node="projects"].primary) [data-node="projects"] { top: calc(50% - min(29vh, 185px)) !important; }
+  .flow:has([data-node="projects"].primary) [data-node="jobpilot"] { left: calc(50% - 58px) !important; top: calc(50% - min(29vh, 185px) - 62px) !important; }
+  .flow:has([data-node="projects"].primary) [data-node="ironakhada"] { left: calc(50% - 82px) !important; top: calc(50% - min(29vh, 185px) - 2px) !important; }
+  .flow:has([data-node="projects"].primary) [data-node="portfolio"] { left: calc(50% - 46px) !important; top: calc(50% - min(29vh, 185px) + 58px) !important; }
+  .flow:has([data-node="projects"].primary) [data-node="photography"] { left: calc(50% + 46px) !important; top: calc(50% - min(29vh, 185px) + 58px) !important; }
+  .flow:has([data-node="projects"].primary) [data-node="pylauncher"] { left: calc(50% + 82px) !important; top: calc(50% - min(29vh, 185px) - 2px) !important; }
+  .flow:has([data-node="projects"].primary) [data-node="smartgrid"] { left: calc(50% + 58px) !important; top: calc(50% - min(29vh, 185px) - 62px) !important; }
+
+  .flow [data-node="analyser"] .node-core > span::after,
+  .flow [data-node="ashok"] .node-core > span::after { font-size: 6.5px; }
+
+  .flow:has([data-node="projects"].primary) [data-node="analyser"] { left: calc(50% + min(31vw, 105px) - 52px) !important; top: calc(50% - min(14.5vh, 88px) - 28px) !important; }
+  .flow:has([data-node="projects"].primary) [data-node="ashok"] { left: calc(50% + min(31vw, 105px) + 52px) !important; top: calc(50% - min(14.5vh, 88px) + 28px) !important; }
+  .flow:has([data-node="experience"].primary) [data-node="analyser"] { left: calc(50% + min(31vw, 105px) - 52px) !important; top: calc(50% - min(14.5vh, 88px) - 28px) !important; }
+  .flow:has([data-node="experience"].primary) [data-node="ashok"] { left: calc(50% + min(31vw, 105px) + 52px) !important; top: calc(50% - min(14.5vh, 88px) + 28px) !important; }
+}
