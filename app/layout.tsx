@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import './graph-layout.css';
+import NodeMessageLayer from './NodeMessageLayer';
 
 export const metadata: Metadata = {
   title: 'Nayan Asati — Flow',
@@ -18,7 +19,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>{children}<NodeMessageLayer /></body>
     </html>
   );
 }
