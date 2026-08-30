@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import './graph-layout.css';
+import './node-message.css';
 import NodeMessageLayer from './NodeMessageLayer';
 
 export const metadata: Metadata = {
