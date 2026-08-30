@@ -14,15 +14,11 @@
 .flow:has([data-node="projects"].primary) [data-node="pylauncher"] { left: calc(50% + 132px) !important; top: calc(50% - min(27vh, 255px) - 4px) !important; }
 .flow:has([data-node="projects"].primary) [data-node="smartgrid"] { left: calc(50% + 100px) !important; top: calc(50% - min(27vh, 255px) - 92px) !important; }
 
-/* Experience on the home graph: employers are a quiet two-node neighborhood around EXPERIENCE. */
-.flow:has([data-node="experience"].primary) [data-node="analyser"],
-.flow:has([data-node="experience"].primary) [data-node="ashok"] {
-  z-index: 10 !important;
-}
+/* Experience on the home graph: two employers form a restrained neighborhood around EXPERIENCE. */
 .flow:has([data-node="experience"].primary) [data-node="analyser"] { left: calc(50% + min(27vw, 220px) + 36px) !important; top: calc(50% - 132px) !important; }
 .flow:has([data-node="experience"].primary) [data-node="ashok"] { left: calc(50% + min(27vw, 220px) + 36px) !important; top: calc(50% + 132px) !important; }
 
-/* When EXPERIENCE is opened, show company names only. Work/role nodes belong inside each company. */
+/* When EXPERIENCE is opened, show only the two employer nodes. */
 .flow:has([data-node="experience"].focus-node) [data-node^="ex-"] {
   display: none !important;
 }
@@ -31,13 +27,13 @@
   display: block !important;
 }
 
-/* Never expose the role/date as hover copy at the company level. */
-.flow:has([data-node="experience"].focus-node) [data-node="analyser"] .node-description,
-.flow:has([data-node="experience"].focus-node) [data-node="ashok"] .node-description {
+/* Company nodes never reveal role/date hover text. The role appears after opening the company. */
+.flow [data-node="analyser"] .node-description,
+.flow [data-node="ashok"] .node-description {
   display: none !important;
 }
 
-/* Replace the old role labels with the company names, without concatenating both strings. */
+/* Replace the old role labels with clean company names, without concatenating both strings. */
 .flow [data-node="analyser"] .node-core > span,
 .flow [data-node="ashok"] .node-core > span {
   display: block;
@@ -57,12 +53,9 @@
 .flow [data-node="analyser"] .node-core > span::after { content: 'ANALYSER INSTRUMENT'; }
 .flow [data-node="ashok"] .node-core > span::after { content: 'ASHOK LEYLAND'; }
 
-/* Company nodes stay comfortably outside the EXPERIENCE circle when its branch is open. */
+/* Company nodes stay clearly separated from EXPERIENCE when its branch is open. */
 .flow:has([data-node="experience"].focus-node) [data-node="analyser"] { left: calc(50% + 315px) !important; top: calc(50% - 122px) !important; }
 .flow:has([data-node="experience"].focus-node) [data-node="ashok"] { left: calc(50% + 315px) !important; top: calc(50% + 122px) !important; }
-
-/* The only connections visible at the Experience level are EXPERIENCE → company. */
-.flow:has([data-node="experience"].focus-node) .flow-lines line[class*="child-ex-"] { display: none; }
 
 @media (max-width: 720px) {
   .flow:has([data-node="projects"].primary) [data-node="projects"] { top: calc(50% - min(29vh, 185px)) !important; }
@@ -75,7 +68,6 @@
 
   .flow:has([data-node="experience"].primary) [data-node="analyser"] { left: calc(50% + 118px) !important; top: calc(50% - 92px) !important; }
   .flow:has([data-node="experience"].primary) [data-node="ashok"] { left: calc(50% + 118px) !important; top: calc(50% + 92px) !important; }
-
   .flow:has([data-node="experience"].focus-node) [data-node="analyser"] { left: calc(50% + 158px) !important; top: calc(50% - 88px) !important; }
   .flow:has([data-node="experience"].focus-node) [data-node="ashok"] { left: calc(50% + 158px) !important; top: calc(50% + 88px) !important; }
 
