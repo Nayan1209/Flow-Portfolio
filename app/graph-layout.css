@@ -14,28 +14,37 @@
 .flow:has([data-node="projects"].primary) [data-node="pylauncher"] { left: calc(50% + 132px) !important; top: calc(50% - min(27vh, 255px) - 4px) !important; }
 .flow:has([data-node="projects"].primary) [data-node="smartgrid"] { left: calc(50% + 100px) !important; top: calc(50% - min(27vh, 255px) - 92px) !important; }
 
-/* Experience on the home graph: the two employers are a compact pair owned by EXPERIENCE. */
+/* Experience: the employers remain where they are; the parent nodes are
+   moved into a clean lane so the hierarchy never visually collides. */
+.flow:has([data-node="experience"].primary) [data-node="experience"] {
+  left: calc(50% + 74px) !important;
+}
+.flow:has([data-node="experience"].primary) [data-node="skills"] {
+  left: calc(50% + 74px) !important;
+}
+
+/* Experience branch: company nodes stay close to EXPERIENCE, but do not overlap
+   the parent node or the neighbouring CAPABILITIES node. */
 .flow:has([data-node="experience"].primary) [data-node="analyser"] { left: calc(50% + min(27vw, 220px) + 24px) !important; top: calc(50% - 78px) !important; }
 .flow:has([data-node="experience"].primary) [data-node="ashok"] { left: calc(50% + min(27vw, 220px) + 24px) !important; top: calc(50% + 78px) !important; }
 
-/* When EXPERIENCE is opened, show only its two employer nodes.
-   They deliberately sit in the same local coordinate neighbourhood as EXPERIENCE,
-   so the camera reads one branch instead of making the employers look like CAPABILITIES. */
-.flow:has([data-node="experience"].focus-node) [data-node^="ex-"] {
-  display: none !important;
-}
+/* When EXPERIENCE is opened, show only its two employer nodes. */
+.flow:has([data-node="experience"].focus-node) [data-node^="ex-"] { display: none !important; }
 .flow:has([data-node="experience"].focus-node) [data-node="analyser"],
-.flow:has([data-node="experience"].focus-node) [data-node="ashok"] {
-  display: block !important;
+.flow:has([data-node="experience"].focus-node) [data-node="ashok"] { display: block !important; }
+
+/* The parent EXPERIENCE node is intentionally offset only enough to create
+   breathing room around its employer satellites. */
+.flow:has([data-node="experience"].focus-node) [data-node="experience"] {
+  left: calc(50% + 74px) !important;
 }
-.flow:has([data-node="experience"].focus-node) [data-node="analyser"] { left: calc(50% + 185px) !important; top: calc(50% - 82px) !important; }
-.flow:has([data-node="experience"].focus-node) [data-node="ashok"] { left: calc(50% + 185px) !important; top: calc(50% + 82px) !important; }
+.flow:has([data-node="experience"].focus-node) [data-node="skills"] {
+  left: calc(50% + 74px) !important;
+}
 
 /* Company nodes never reveal role/date hover text. The role appears after opening the company. */
 .flow [data-node="analyser"] .node-description,
-.flow [data-node="ashok"] .node-description {
-  display: none !important;
-}
+.flow [data-node="ashok"] .node-description { display: none !important; }
 
 /* Clean company-only labels. */
 .flow [data-node="analyser"] .node-core > span,
@@ -58,7 +67,7 @@
 .flow [data-node="ashok"] .node-core > span::after { content: 'ASHOK LEYLAND'; }
 
 @media (max-width: 720px) {
-  .flow:has([data-node="projects"].primary) [data-node="projects"] { top: calc(50% - min(29vh, 185px)) !important; }
+  .flow:has([data-node="projects"].primary) [data-node="projects"] { top: calc(50% - min(29vh, 185px)); }
   .flow:has([data-node="projects"].primary) [data-node="jobpilot"] { left: calc(50% - 58px) !important; top: calc(50% - min(29vh, 185px) - 62px) !important; }
   .flow:has([data-node="projects"].primary) [data-node="ironakhada"] { left: calc(50% - 82px) !important; top: calc(50% - min(29vh, 185px) - 2px) !important; }
   .flow:has([data-node="projects"].primary) [data-node="portfolio"] { left: calc(50% - 46px) !important; top: calc(50% - min(29vh, 185px) + 58px) !important; }
@@ -66,7 +75,14 @@
   .flow:has([data-node="projects"].primary) [data-node="pylauncher"] { left: calc(50% + 82px) !important; top: calc(50% - min(29vh, 185px) - 2px) !important; }
   .flow:has([data-node="projects"].primary) [data-node="smartgrid"] { left: calc(50% + 58px) !important; top: calc(50% - min(29vh, 185px) - 62px) !important; }
 
-  /* Compact mobile experience cluster: both companies stay visibly attached to EXPERIENCE. */
+  /* Parent nodes move, not the company satellites. */
+  .flow:has([data-node="experience"].primary) [data-node="experience"],
+  .flow:has([data-node="experience"].primary) [data-node="skills"],
+  .flow:has([data-node="experience"].focus-node) [data-node="experience"],
+  .flow:has([data-node="experience"].focus-node) [data-node="skills"] {
+    left: calc(50% + 72px) !important;
+  }
+
   .flow:has([data-node="experience"].primary) [data-node="analyser"] { left: calc(50% + 112px) !important; top: calc(50% - 62px) !important; }
   .flow:has([data-node="experience"].primary) [data-node="ashok"] { left: calc(50% + 112px) !important; top: calc(50% + 62px) !important; }
   .flow:has([data-node="experience"].focus-node) [data-node="analyser"] { left: calc(50% + 122px) !important; top: calc(50% - 66px) !important; }
