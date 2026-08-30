@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import './graph-layout.css';
 
 export const metadata: Metadata = {
   title: 'Nayan Asati — Flow',
