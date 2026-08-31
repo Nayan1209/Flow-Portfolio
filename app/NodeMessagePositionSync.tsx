@@ -16,24 +16,32 @@ export default function NodeMessagePositionSync() {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       const mobile = vw <= 720;
-      const gap = mobile ? 14 : 26;
-      const panelW = Math.min(620, vw - (mobile ? 28 : 40));
-      const panelH = Math.min(mobile ? vh * .58 : vh * .58, mobile ? 520 : 560);
+      // Smaller card + tighter gap keeps the detail surface visually attached to its node.
+      const gap = mobile ? 10 : 16;
+      const panelW = Math.min(480, vw - (mobile ? 24 : 32));
+      const panelH = Math.min(mobile ? vh * .58 : vh * .56, mobile ? 520 : 540);
+
       let left = rect.right + gap;
       let top = rect.top + rect.height / 2 - panelH / 2;
-      if (!mobile && left + panelW > vw - 14) left = rect.left - gap - panelW;
-      if (left < 14 || mobile) {
+
+      // Prefer the nearest side of the source node; only cross the node when necessary.
+      if (!mobile && left + panelW > vw - 12) {
+        left = rect.left - gap - panelW;
+      }
+      if (mobile) {
         left = rect.left + rect.width / 2 - panelW / 2;
         top = rect.bottom + gap;
-        if (top + panelH > vh - 12) top = rect.top - gap - panelH;
+        if (top + panelH > vh - 10) top = rect.top - gap - panelH;
       }
-      left = Math.max(12, Math.min(left, vw - panelW - 12));
-      top = Math.max(12, Math.min(top, vh - panelH - 12));
+
+      left = Math.max(10, Math.min(left, vw - panelW - 10));
+      top = Math.max(10, Math.min(top, vh - panelH - 10));
       root.style.setProperty('--node-message-left', `${left}px`);
       root.style.setProperty('--node-message-top', `${top}px`);
       root.style.setProperty('--node-message-transform', 'none');
       frame.current = requestAnimationFrame(position);
     };
+
     const onClick = (event: MouseEvent) => {
       const target = event.target as Element | null;
       const node = target?.closest<HTMLElement>('[data-node]');
@@ -42,6 +50,7 @@ export default function NodeMessagePositionSync() {
       if (frame.current) cancelAnimationFrame(frame.current);
       frame.current = requestAnimationFrame(position);
     };
+
     document.addEventListener('click', onClick, true);
     window.addEventListener('resize', position);
     window.addEventListener('scroll', position, true);
@@ -55,5 +64,6 @@ export default function NodeMessagePositionSync() {
       root.style.removeProperty('--node-message-transform');
     };
   }, []);
+
   return null;
 }
