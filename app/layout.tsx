@@ -3,6 +3,7 @@ import './globals.css';
 import './graph-layout.css';
 import './node-message.css';
 import NodeMessageLayer from './NodeMessageLayer';
+import NodeMessagePositionSync from './NodeMessagePositionSync';
 
 export const metadata: Metadata = {
   title: 'Nayan Asati — Flow',
@@ -20,7 +21,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}<NodeMessageLayer /></body>
+      <body>{children}<NodeMessagePositionSync /><NodeMessageLayer /></body>
     </html>
   );
 }
