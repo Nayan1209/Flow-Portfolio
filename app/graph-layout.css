@@ -111,3 +111,51 @@
   .flow [data-node="analyser"] .node-core > span::after,
   .flow [data-node="ashok"] .node-core > span::after { font-size: 6.5px; }
 }
+
+/* ORIGIN MESSAGE: remove the card completely and let the message float as part of the bottom UI line. */
+.flow-detail {
+  left: 50% !important;
+  bottom: 76px !important;
+  width: min(820px, calc(100vw - 72px)) !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transform: translateX(-50%) !important;
+  pointer-events: none !important;
+  text-align: center;
+}
+.flow-detail:hover { transform: translateX(-50%) !important; border: 0 !important; }
+.flow-detail .detail-index { justify-content: center; gap: 10px; }
+.flow-detail .detail-index span:last-child { display: none; }
+.flow-detail h1 {
+  margin: 9px auto 5px !important;
+  max-width: 760px !important;
+  font-size: clamp(18px, 2vw, 27px) !important;
+  line-height: 1.05 !important;
+}
+.flow-detail p {
+  margin: 0 auto !important;
+  max-width: 720px !important;
+  font-size: 8px !important;
+  line-height: 1.45 !important;
+  color: #777e76 !important;
+}
+.flow-detail .detail-facts,
+.flow-detail .detail-tags,
+.flow-detail .detail-links { justify-content: center; }
+.flow-detail .detail-facts { margin-top: 7px; }
+.flow-detail .detail-tags { margin-top: 7px; }
+.flow-detail .detail-links { pointer-events: auto; }
+
+@media (max-width: 720px) {
+  .flow-detail {
+    bottom: 62px !important;
+    width: calc(100vw - 34px) !important;
+  }
+  .flow-detail h1 { font-size: 16px !important; }
+  .flow-detail p { font-size: 7px !important; }
+}
